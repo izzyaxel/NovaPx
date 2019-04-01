@@ -1,2 +1,2 @@
 # PixelCreator
-Modern pixel editing and animation tool
+Likely a temporary name.  A sprite creation and animation tool written in C++ and OpenGL 4.5+.
