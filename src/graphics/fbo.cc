@@ -1,6 +1,5 @@
 #include "fbo.hh"
 
-#include <glad/glad.h>
 #include <vector>
 #include <cstdio>
 
@@ -11,7 +10,7 @@ void initFBOPool(size_t alloc, uint32_t width, uint32_t height)
 	fboPool = MU<FBOPool>(alloc, width, height);
 }
 
-void createFBO(FBO &fbo)
+void FBO::createFBO(FBO &fbo)
 {
 	glCreateFramebuffers(1, &fbo.handle);
 	fbo.bindFBO();
@@ -46,7 +45,7 @@ void createFBO(FBO &fbo)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void clearFBO(FBO &fbo)
+void FBO::clearFBO(FBO &fbo)
 {
 	glDeleteFramebuffers(1, &fbo.handle);
 	glDeleteTextures(1, &fbo.colorHandle);

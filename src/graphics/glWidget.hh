@@ -1,9 +1,10 @@
 #pragma once
 
+#include <QtGui/QOpenGLFunctions_4_5_Core>
 #include <QtWidgets/QOpenGLWidget>
 #include <QtCore/QTimer>
 
-struct GLWidget : public QOpenGLWidget
+struct GLWidget : public QOpenGLWidget, QOpenGLFunctions_4_5_Core
 {
 	QTimer *timer;
 	

@@ -4,8 +4,9 @@
 
 #include <cstdint>
 #include <initializer_list>
+#include <QtGui/QOpenGLFunctions_4_5_Core>
 
-struct FBO
+struct FBO : private QOpenGLFunctions_4_5_Core
 {
 	using AttachmentType = uint8_t;
 	static constexpr AttachmentType COLOR = 1 << 0;
@@ -30,9 +31,13 @@ struct FBO
 	uint32_t handle = 0, colorHandle = 0, depthHandle = 0, width = 0, height = 0;
 	bool hasColor = false, hasAlpha = false, hasDepth = false, hasStencil = false;
 	std::string name = "";
+
+private:
+	void clearFBO(FBO &fbo);
+	void createFBO(FBO &fbo);
 };
 
-struct FBOPool
+struct FBOPool : private QOpenGLFunctions_4_5_Core
 {
 	FBOPool() = delete;
 	FBOPool(FBOPool const &other) = delete;

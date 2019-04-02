@@ -2,8 +2,6 @@
 
 #include "../util/util.hh"
 
-#include <glad/glad.h>
-
 Shader::Shader(std::string const &vertShader, std::string const &fragShader)
 {
 	uint32_t vertHandle = glCreateShader(GL_VERTEX_SHADER), fragHandle = glCreateShader(GL_FRAGMENT_SHADER);

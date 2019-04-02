@@ -6,8 +6,9 @@
 #include <vector>
 #include <array>
 #include <iris/quaternion.hh>
+#include <QtGui/QOpenGLFunctions_4_5_Core>
 
-struct Mesh
+struct Mesh : private QOpenGLFunctions_4_5_Core
 {
 	Mesh() = default;
 	~Mesh();

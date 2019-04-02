@@ -1,10 +1,8 @@
 #include "util.hh"
-#include "threadPool.hh"
 
 #include <codecvt>
 #include <locale>
 #include <fstream>
-#include <glad/glad.h>
 #include <png.h>
 
 #if defined(WINDOWS)
@@ -110,33 +108,6 @@ void writePNG(std::string const &filePath, uint32_t width, uint32_t height, unsi
 	}
 	png_write_end(pngPtr, nullptr);
 	fclose(output);
-}
-
-void screenshotIOThread(std::string const &folderPath, uint32_t width, uint32_t height, std::vector<unsigned char> pixels)
-{
-	createDirectory(folderPath); //Create the screenshots directory if it doesn't exist
-	std::string fileName = "Screenshot ";
-	std::time_t t = std::time(nullptr);
-	std::tm tm = *std::localtime(&t);
-	char dt[16];
-	strftime(dt, 16, "%m-%d-%y %H%M%S", &tm); //Produce a formatted date and time string for the filename
-	fileName += dt;
-	fileName += ".png";
-	unsigned char **pngData = new unsigned char *[height * sizeof(unsigned char *)]; //Reorder the data into rows for libpng
-	for(unsigned int i = 0; i < height; i++) pngData[i] = new unsigned char[width * 3];
-	for(unsigned int x = 0; x < height; x++) memcpy(pngData[height - x - 1], pixels.data() + x * (width * 3), width * 3);
-	writePNG(folderPath + fileName, width, height, pngData); //Call to Beast to write the PNG file to disk
-	for(uint32_t i = 0; i < height; i++) delete[] pngData[i];
-	delete[] pngData;
-}
-
-void screenshot(std::string const &folderPath, uint32_t width, uint32_t height)
-{
-	std::vector<unsigned char> pixels;
-	pixels.resize(width * height * 3); //Preallocate
-	glPixelStorei(GL_PACK_ALIGNMENT, 1); //Ensure the pixel data we get from OGL is in the right format
-	glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels.data()); //Grab the pixels currently in the buffer and store them in the vector
-	threadPool.enqueue(screenshotIOThread, folderPath, width, height, pixels); //I/O will cause a hiccup in the framerate if we don't spin it off into a new asynchronous thread 
 }
 
 namespace StringTools

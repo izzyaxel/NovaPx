@@ -3,7 +3,6 @@
 
 #include <cstdint>
 #include <string>
-#include <glad/glad.h>
 
 Texture::Texture(SP<Image> image) //TODO handle 16 bit images in GL
 {

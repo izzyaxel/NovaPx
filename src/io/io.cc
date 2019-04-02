@@ -96,8 +96,3 @@ void writePNG(std::string const &filePath, PNG &image)
 {
 	writePNG(filePath, image.width, image.height, image.imageData);
 }
-
-void writeScreenshot(std::string const &folderPath, uint32_t width, uint32_t height)
-{
-	screenshot(folderPath, width, height);
-}

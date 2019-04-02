@@ -8,8 +8,9 @@
 #include <iris/vec4.hh>
 #include <iris/mat3.hh>
 #include <iris/mat4.hh>
+#include <QtGui/QOpenGLFunctions_4_5_Core>
 
-struct Shader
+struct Shader : private QOpenGLFunctions_4_5_Core
 {
 	Shader(std::string const &vertShader, std::string const &fragShader);
 	Shader(std::string const &compShader);

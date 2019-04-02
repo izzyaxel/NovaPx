@@ -1,4 +1,3 @@
-#include <glad/glad.h>
 #include "glWidget.hh"
 #include "../util/util.hh"
 #include "../info/globals.hh"
@@ -13,7 +12,7 @@ static void *wrapperProcLoader(char const *name)
 	return reinterpret_cast<void *>(QOpenGLContext::currentContext()->getProcAddress(name));
 }
 
-GLWidget::GLWidget(QWidget *parent) : QOpenGLWidget(parent)
+GLWidget::GLWidget(QWidget *parent) : QOpenGLWidget(parent), QOpenGLFunctions_4_5_Core()
 {
 	this->timer = new QTimer(this);
 	QObject::connect(this->timer, &QTimer::timeout, this->timer, [&](){this->update();});
@@ -28,10 +27,12 @@ void GLWidget::initializeGL()
 	fmt.setMinorVersion(5);
 	fmt.setDepthBufferSize(24);
 	fmt.setProfile(QSurfaceFormat::OpenGLContextProfile::CoreProfile);
+	fmt.setSwapInterval(1);
 	fmt.setSwapBehavior(QSurfaceFormat::SwapBehavior::DoubleBuffer);
-	this->context()->setFormat(fmt);
-	gladLoadGLLoader(wrapperProcLoader);
-	if(!GLAD_GL_VERSION_4_5)
+	this->setFormat(fmt);
+	QOpenGLFunctions_4_5_Core *funcs = nullptr;
+	funcs = this->context()->versionFunctions<QOpenGLFunctions_4_5_Core>();
+	if(!funcs)
 	{
 		throw std::runtime_error("Couldn't start OpenGL, your graphics card doesn't support version 4.5");
 	}
@@ -63,7 +64,7 @@ void GLWidget::paintGL()
 	renderer->render();
 	if(Info::screenshotQueued)
 	{
-		screenshot(Info::screenshotDir, Context::width, Context::height);
+		renderer->screenshot(Info::screenshotDir, Context::width, Context::height);
 		Info::screenshotQueued = false;
 	}
 }

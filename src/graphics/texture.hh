@@ -5,8 +5,9 @@
 
 #include <cstdint>
 #include <string>
+#include <QtGui/QOpenGLFunctions_4_5_Core>
 
-struct Texture
+struct Texture : QOpenGLFunctions_4_5_Core
 {
 	Texture(SP<Image> image);
 	Texture(Image &image);

@@ -43,8 +43,6 @@ set(SRC
 		src/graphics/color.cc src/graphics/color.hh
 		src/graphics/fbo.cc src/graphics/fbo.hh
 		src/graphics/filter.hh
-		src/graphics/gl.cc src/graphics/gl.hh
-		src/graphics/glad.c
 		src/graphics/image.cc src/graphics/image.hh
 		src/graphics/mesh.cc src/graphics/mesh.hh
 		src/graphics/png.cc src/graphics/png.hh

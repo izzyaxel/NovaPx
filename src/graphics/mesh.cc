@@ -1,7 +1,6 @@
 #include "mesh.hh"
 #include "../util/util.hh"
 
-#include <glad/glad.h>
 #include <iris/mat4.hh>
 
 Mesh::~Mesh()
