@@ -6,10 +6,10 @@
 #include "../assets/shaders.hh"
 #include "../assets/meshes.hh"
 #include "texture.hh"
+#include "../info/globals.hh"
 
 #include <glad/glad.h>
 #include <algorithm>
-#include <SDL2/SDL_video.h>
 #include <iris/quaternion.hh>
 
 UP<Shader> objectShader;
@@ -41,19 +41,19 @@ Renderer::~Renderer()
 	destroyAssets();
 }
 
-void Renderer::render(Image &canvas, Camera &camera)
+void Renderer::render()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	this->v = IR::mat4x4<float>::viewMatrix(IR::quat<float>{}, IR::vec3<float>{camera.pos, 0});
+	this->v = IR::mat4x4<float>::viewMatrix(IR::quat<float>{}, IR::vec3<float>{camera->pos, 0});
 	this->p = IR::mat4x4<float>::orthoProjectionMatrix(0, this->contextWidth, this->contextHeight, 0, 0, 1);
 	
 	//Render the UI
 	
 	
 	//Render the canvas
-	if(!canvas.empty() && canvas.isDirty())
+	if(!canvas->empty() && canvas->isDirty())
 	{
-		this->m = IR::mat4x4<float>::modelMatrix(IR::vec3<float>(0, 0, -1), IR::quat<float>{}, IR::vec3<float>(canvas.width, canvas.height, 1));
+		this->m = IR::mat4x4<float>::modelMatrix(IR::vec3<float>(0, 0, -1), IR::quat<float>{}, IR::vec3<float>(canvas->width, canvas->height, 1));
 		this->mvp = IR::mat4x4<float>::modelViewProjectionMatrix(this->m, this->v, this->p);
 		objectShader->use();
 		objectShader->sendMat4f("mvp", this->mvp);
@@ -63,8 +63,8 @@ void Renderer::render(Image &canvas, Camera &camera)
 	}
 }
 
-void Renderer::onResize(uint32_t width, uint32_t height)
+void Renderer::onResize()
 {
-	glViewport(0, 0, width, height);
-	glScissor(0, 0, width, height);
+	glViewport(0, 0, Context::width, Context::height);
+	glScissor(0, 0, Context::width, Context::height);
 }

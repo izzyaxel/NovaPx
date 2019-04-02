@@ -8,6 +8,7 @@
 
 struct Texture
 {
+	Texture(SP<Image> image);
 	Texture(Image &image);
 	
 	~Texture();

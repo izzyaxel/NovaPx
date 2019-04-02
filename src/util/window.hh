@@ -1,7 +1,6 @@
 #pragma once
 
 #include "event.hh"
-#include "input.hh"
 #include "../graphics/renderer.hh"
 
 #include <cstdint>

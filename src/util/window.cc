@@ -1,11 +1,8 @@
 #include "window.hh"
 #include "../util/def.hh"
-#include "input.hh"
 #include "event.hh"
 #include "util.hh"
 
-#define SDL_MAIN_HANDLED
-#include <SDL2/SDL.h>
 #include <glad/glad.h>
 
 void glDebug(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, GLchar const *message, void const *userParam)
@@ -70,7 +67,7 @@ Window::Window(uint32_t width, uint32_t height, uint32_t minWidth, uint32_t minH
 	this->resizable = resizable;
 	this->startMaximized = startMaximized;
 	
-	SDL_Init(SDL_INIT_EVERYTHING);
+	
 	this->window = SDL_CreateWindow(this->name.data(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, this->width, this->height, SDL_WINDOW_OPENGL);
 	if(!this->window) throw std::runtime_error("Window Setup: Failed to create a window");
 	SDL_SetWindowResizable(reinterpret_cast<SDL_Window*>(this->window), this->resizable ? SDL_TRUE : SDL_FALSE);
@@ -83,7 +80,7 @@ Window::Window(uint32_t width, uint32_t height, uint32_t minWidth, uint32_t minH
 		this->width = static_cast<uint32_t>(w);
 		this->height = static_cast<uint32_t>(h);
 	}
-	Input::init();
+	
 	
 	SDL_GL_LoadLibrary(nullptr);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -108,7 +105,6 @@ Window::Window(uint32_t width, uint32_t height, uint32_t minWidth, uint32_t minH
 	glViewport(0, 0, width, height);
 	glScissor(0, 0, width, height);
 	this->renderer = new Renderer;
-	initFBOPool(4, width, height);
 }
 
 Window::~Window()
@@ -116,7 +112,6 @@ Window::~Window()
 	delete this->eventBus;
 	delete this->renderer;
 	SDL_DestroyWindow(reinterpret_cast<SDL_Window*>(this->window));
-	SDL_Quit();
 }
 
 void Window::setTitle(std::string const &name)

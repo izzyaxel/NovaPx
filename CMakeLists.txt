@@ -36,7 +36,8 @@ endif()
 set(SRC
 		src/main.cc
 		
-		src/io/io.cc src/io/io.hh
+		src/assets/shaders.hh
+		src/assets/meshes.hh
 		
 		src/graphics/camera.hh
 		src/graphics/color.cc src/graphics/color.hh
@@ -50,27 +51,33 @@ set(SRC
 		src/graphics/renderer.cc src/graphics/renderer.hh
 		src/graphics/shader.cc src/graphics/shader.hh
 		src/graphics/texture.cc src/graphics/texture.hh
+		src/graphics/glWidget.cc src/graphics/glWidget.hh
+		
+		src/info/globals.hh src/info/globals.cc
+		
+		src/io/io.cc src/io/io.hh
 		
 		src/util/def.hh
 		src/util/event.hh
-		src/util/input.cc src/util/input.hh
 		src/util/threadPool.cc src/util/threadPool.hh
 		src/util/util.cc src/util/util.hh
-		src/util/window.cc src/util/window.hh
-		
-		src/assets/shaders.hh src/assets/meshes.hh)
-
-if(WIN32 OR WIN64)
-	set(LIBS
-			${CMAKE_SOURCE_DIR}/libs/libpng.a
-			${CMAKE_SOURCE_DIR}/libs/libz.a
-			${CMAKE_SOURCE_DIR}/libs/libSDL2.a
-			imm32 version winmm)
-elseif(UNIX)
-	set(LIBS SDL2 png z dl pthread)
-endif()
+		src/util/widget.cc src/util/widget.hh)
 
 project(PixelCreator)
 include_directories(include)
+set(CMAKE_AUTOMOC ON)
+find_package(Qt5Widgets REQUIRED)
+
+if(WIN32 OR WIN64)
+	set(LIBS
+			Qt5::Widgets
+			${CMAKE_SOURCE_DIR}/libs/libpng.a
+			${CMAKE_SOURCE_DIR}/libs/libz.a)
+elseif(UNIX)
+	set(LIBS png z dl pthread)
+endif()
+
+include_directories(C:/msys64/mingw64/qt5-static/include/)
 add_executable(${PROJECT_NAME} ${SRC})
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
 target_link_libraries(${PROJECT_NAME} ${LIBS})

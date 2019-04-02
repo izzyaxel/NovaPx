@@ -15,3 +15,6 @@
 cmake-build-debug/
 cmake-build-release/
 cmake-build-relwithdebinfo/
+cmake-build-debug-msys2/
+cmake-build-release-msys2/
+cmake-build-relwithdebinfo-msys2/

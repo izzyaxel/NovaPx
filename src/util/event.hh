@@ -1,7 +1,6 @@
 #pragma once
 
 #include <functional>
-#include <SDL2/SDL_events.h>
 
 enum struct Event
 {
@@ -32,7 +31,6 @@ struct EventBus
 		else if constexpr(e == Event::WINDOWTAKEFOCUS) for(auto const &cb : this->windowTakeFocusEventCBs) cb();
 		else if constexpr(e == Event::WINDOWMOVED) for(auto const &cb : this->windowMovedEventCBs) cb();
 		else if constexpr(e == Event::MOUSEBUTTON) for(auto const &cb : this->mouseButtonEventCBs) cb(args...);
-		else if constexpr(e == Event::KEYBOARD) for(auto const &cb : this->keyEventCBs) cb(args...);
 	}
 	
 	template <Event e, typename... Args, typename Callback = std::function<void(Args ...)>> void registerEventHandler(Callback callback)
@@ -54,12 +52,10 @@ struct EventBus
 		else if constexpr(e == Event::WINDOWTAKEFOCUS) this->windowTakeFocusEventCBs.push_back(callback);
 		else if constexpr(e == Event::WINDOWMOVED) this->windowMovedEventCBs.push_back(callback);
 		else if constexpr(e == Event::MOUSEBUTTON) this->mouseButtonEventCBs.push_back(callback);
-		else if constexpr(e == Event::KEYBOARD) this->keyEventCBs.push_back(callback);
 	}
 
 private:
 	std::vector<std::function<void ()>> exitingEventCBs,
 	windowCloseEventCBs, windowSizeChangedEventCBs, windowFocusGainedEventCBs, windowFocusLostEventCBs, windowEnterEventCBs, windowLeaveEventCBs, windowExposedEventCBs, windowHiddenEventCBs, windowShownEventCBs, windowHitTestEventCBs, windowRestoredEventCBs, windowMinimizedEventCBs, windowMaximizedEventCBs, windowTakeFocusEventCBs, windowMovedEventCBs;
 	std::vector<std::function<void (bool down, uint8_t button)>>mouseButtonEventCBs;
-	std::vector<std::function<void (bool down, SDL_KeyboardEvent event)>> keyEventCBs;
 };

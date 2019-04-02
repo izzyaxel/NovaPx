@@ -15,8 +15,8 @@ struct Renderer
 	Renderer();
 	~Renderer();
 	
-	void render(Image &canvas, Camera &camera);
-	void onResize(uint32_t width, uint32_t height);
+	void render();
+	void onResize();
 
 private:
 	uint32_t contextWidth, contextHeight;
