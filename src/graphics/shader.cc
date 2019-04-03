@@ -4,6 +4,7 @@
 
 Shader::Shader(std::string const &vertShader, std::string const &fragShader)
 {
+	this->initializeOpenGLFunctions();
 	uint32_t vertHandle = glCreateShader(GL_VERTEX_SHADER), fragHandle = glCreateShader(GL_FRAGMENT_SHADER);
 	this->shaderHandle = glCreateProgram();
 	char const *vertSource = vertShader.data(), *fragSource = fragShader.data();
@@ -61,6 +62,7 @@ Shader::Shader(std::string const &vertShader, std::string const &fragShader)
 
 Shader::Shader(std::string const &compShader)
 {
+	this->initializeOpenGLFunctions();
 	uint32_t compHandle = glCreateShader(GL_COMPUTE_SHADER);
 	this->shaderHandle = glCreateProgram();
 	char const *compSource = compShader.data();

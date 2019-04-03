@@ -1,28 +1,21 @@
 #include "glWidget.hh"
 #include "../util/util.hh"
-#include "../info/globals.hh"
+#include "../util/globals.hh"
 
 #include <QtGui/QMouseEvent>
 #include <QtCore/QTime>
 #include <QtGui/QOpenGLContext>
 #include <exception>
 
-static void *wrapperProcLoader(char const *name)
+GLWidget::GLWidget(QWidget *parent) : QOpenGLWidget(parent)
 {
-	return reinterpret_cast<void *>(QOpenGLContext::currentContext()->getProcAddress(name));
-}
-
-GLWidget::GLWidget(QWidget *parent) : QOpenGLWidget(parent), QOpenGLFunctions_4_5_Core()
-{
+	camera = MS<Camera>();
+	
 	this->timer = new QTimer(this);
 	QObject::connect(this->timer, &QTimer::timeout, this->timer, [&](){this->update();});
 	this->timer->start(0);
-	eventBus = MU<EventBus>();
-}
-
-void GLWidget::initializeGL()
-{
-	QSurfaceFormat fmt;
+	
+	QSurfaceFormat fmt = QSurfaceFormat::defaultFormat();
 	fmt.setMajorVersion(4);
 	fmt.setMinorVersion(5);
 	fmt.setDepthBufferSize(24);
@@ -30,41 +23,47 @@ void GLWidget::initializeGL()
 	fmt.setSwapInterval(1);
 	fmt.setSwapBehavior(QSurfaceFormat::SwapBehavior::DoubleBuffer);
 	this->setFormat(fmt);
-	QOpenGLFunctions_4_5_Core *funcs = nullptr;
-	funcs = this->context()->versionFunctions<QOpenGLFunctions_4_5_Core>();
-	if(!funcs)
+}
+
+void GLWidget::initializeGL()
+{
+	this->funcs = this->context()->versionFunctions<QOpenGLFunctions_4_5_Core>();
+	int major, minor;
+	this->funcs->glGetIntegerv(GL_MAJOR_VERSION, &major);
+	this->funcs->glGetIntegerv(GL_MINOR_VERSION, &minor);
+	if(major != 4 && minor != 5)
 	{
 		throw std::runtime_error("Couldn't start OpenGL, your graphics card doesn't support version 4.5");
 	}
-	
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_SCISSOR_TEST);
-	glEnable(GL_BLEND);
-	glDisable(GL_CULL_FACE);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glViewport(0, 0, Context::width, Context::height);
-	glScissor(0, 0, Context::width, Context::height);
-	glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
-	glLineWidth(3.0f);
-	glEnable(GL_LINE_SMOOTH);
-	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-	glPointSize(6.0f);
-	renderer = MU<Renderer>();
+	this->funcs->glEnable(GL_DEPTH_TEST);
+	this->funcs->glEnable(GL_SCISSOR_TEST);
+	this->funcs->glEnable(GL_BLEND);
+	this->funcs->glDisable(GL_CULL_FACE);
+	this->funcs->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	this->funcs->glViewport(0, 0, Context::width, Context::height);
+	this->funcs->glScissor(0, 0, Context::width, Context::height);
+	this->funcs->glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
+	this->funcs->glLineWidth(3.0f);
+	this->funcs->glEnable(GL_LINE_SMOOTH);
+	this->funcs->glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+	this->funcs->glPointSize(6.0f);
+	renderer = MU<Renderer>(this->funcs);
+	canvas = MS<Image>(getCWD() + "test.png");
 }
 
 void GLWidget::resizeGL(int w, int h)
 {
 	Context::width = static_cast<uint32_t>(w);
 	Context::height = static_cast<uint32_t>(h);
-	renderer->onResize();
+	renderer->onResize(this->funcs);
 }
 
 void GLWidget::paintGL()
 {
-	renderer->render();
+	renderer->render(this->funcs);
 	if(Info::screenshotQueued)
 	{
-		renderer->screenshot(Info::screenshotDir, Context::width, Context::height);
+		renderer->screenshot(Info::screenshotDir, Context::width, Context::height, this->funcs);
 		Info::screenshotQueued = false;
 	}
 }
@@ -117,9 +116,8 @@ void GLWidget::mouseReleaseEvent(QMouseEvent *event)
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
 	Mouse::prevPos = Mouse::pos;
-	QPoint cPos = QCursor::pos();
-	Mouse::pos.x() = cPos.x();
-	Mouse::pos.y() = cPos.y();
+	Mouse::pos.x() = event->pos().x();
+	Mouse::pos.y() = event->pos().y();
 	if(Mouse::lmbDown) Mouse::lmbDownDrag = true;
 	if(Mouse::rmbDown) Mouse::rmbDownDrag = true;
 	if(Mouse::mmbDown) Mouse::mmbDownDrag = true;

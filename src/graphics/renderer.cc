@@ -5,7 +5,7 @@
 #include "../assets/shaders.hh"
 #include "../assets/meshes.hh"
 #include "texture.hh"
-#include "../info/globals.hh"
+#include "../util/globals.hh"
 #include "../util/threadPool.hh"
 
 #include <algorithm>
@@ -14,6 +14,44 @@
 
 UP<Shader> objectShader;
 UP<Mesh> llQuadMesh, orthoQuadMesh;
+
+/// Access types for compute shader imnage binding
+enum struct IO
+{
+	READ = 0x88B8, WRITE = 0x88B9, READWRITE = 0x88BA
+};
+
+/// Color format for compute shader image binding
+enum struct CF
+{
+	R32F = 0x822E, RGB8 = 0x8051, RGBA8 = 0x8058, RGB16 = 0x8054, RGBA16 = 0x805B, RGB32I = 0x8D83, RGBA32I = 0x8D82,
+	RGB32UI = 0x8D71, RGBA32UI = 0x8D70, RGB16F = 0x881B, RGBA16F = 0x881A, RGB32F = 0x8815, RGBA32F = 0x8814,
+	DEPTH32F = 0x8CAC,
+};
+
+/// Mode to draw a VAO in
+enum struct DrawMode
+{
+	TRIS = 0x0004, TRISTRIPS = 0x0005, TRIFANS = 0x0006,
+	LINES = 0x0001, LINESTRIPS = 0x0003, LINELOOPS = 0x0002,
+	POINTS = 0x0000,
+};
+
+void draw(DrawMode mode, int32_t numElements, QOpenGLFunctions_4_5_Core *funcs)
+{
+	funcs->glDrawArrays(static_cast<GLenum>(mode), 0, numElements);
+}
+
+void bindImage(uint32_t target, uint32_t const &handle, IO mode, CF format, QOpenGLFunctions_4_5_Core *funcs)
+{
+	funcs->glBindImageTexture(target, handle, 0, GL_FALSE, 0, static_cast<uint32_t>(mode), static_cast<uint32_t>(format));
+}
+
+uint32_t workSizeX = 40, workSizeY = 20;
+void startComputeShader(uint32_t contextWidth, uint32_t contextHeight, QOpenGLFunctions_4_5_Core *funcs)
+{
+	funcs->glDispatchCompute(static_cast<uint32_t>(std::ceil(static_cast<float>(contextWidth) / workSizeX)), static_cast<uint32_t>(std::ceil(static_cast<float>(contextHeight) / workSizeY)), 1);
+}
 
 void initAssets()
 {
@@ -29,11 +67,11 @@ void destroyAssets()
 	orthoQuadMesh.reset();
 }
 
-Renderer::Renderer()
+Renderer::Renderer(QOpenGLFunctions_4_5_Core *funcs)
 {
 	initAssets();
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+	funcs->glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	funcs->glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 }
 
 Renderer::~Renderer()
@@ -41,17 +79,14 @@ Renderer::~Renderer()
 	destroyAssets();
 }
 
-void Renderer::render()
+void Renderer::render(QOpenGLFunctions_4_5_Core *funcs)
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	funcs->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	this->v = IR::mat4x4<float>::viewMatrix(IR::quat<float>{}, IR::vec3<float>{camera->pos, 0});
-	this->p = IR::mat4x4<float>::orthoProjectionMatrix(0, this->contextWidth, this->contextHeight, 0, 0, 1);
-	
-	//Render the UI
-	
+	this->p = IR::mat4x4<float>::orthoProjectionMatrix(0, Context::width, Context::height, 0, 0, 1);
 	
 	//Render the canvas
-	if(!canvas->empty() && canvas->isDirty())
+	if(canvas && !canvas->empty() && canvas->isDirty())
 	{
 		this->m = IR::mat4x4<float>::modelMatrix(IR::vec3<float>(0, 0, -1), IR::quat<float>{}, IR::vec3<float>(canvas->width, canvas->height, 1));
 		this->mvp = IR::mat4x4<float>::modelViewProjectionMatrix(this->m, this->v, this->p);
@@ -59,14 +94,14 @@ void Renderer::render()
 		objectShader->sendMat4f("mvp", this->mvp);
 		llQuadMesh->use();
 		MS<Texture>(canvas)->use();
-		draw(DrawMode::TRISTRIPS, llQuadMesh->numVerts);
+		draw(DrawMode::TRISTRIPS, llQuadMesh->numVerts, funcs);
 	}
 }
 
-void Renderer::onResize()
+void Renderer::onResize(QOpenGLFunctions_4_5_Core *funcs)
 {
-	glViewport(0, 0, Context::width, Context::height);
-	glScissor(0, 0, Context::width, Context::height);
+	funcs->glViewport(0, 0, Context::width, Context::height);
+	funcs->glScissor(0, 0, Context::width, Context::height);
 }
 
 void screenshotIOThread(std::string const &folderPath, uint32_t width, uint32_t height, std::vector<unsigned char> pixels)
@@ -87,16 +122,11 @@ void screenshotIOThread(std::string const &folderPath, uint32_t width, uint32_t 
 	delete[] pngData;
 }
 
-void Renderer::screenshot(std::string const &folderPath, uint32_t width, uint32_t height)
+void Renderer::screenshot(std::string const &folderPath, uint32_t width, uint32_t height, QOpenGLFunctions_4_5_Core *funcs)
 {
 	std::vector<unsigned char> pixels;
 	pixels.resize(width * height * 3); //Preallocate
-	glPixelStorei(GL_PACK_ALIGNMENT, 1); //Ensure the pixel data we get from OGL is in the right format
-	glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels.data()); //Grab the pixels currently in the buffer and store them in the vector
+	funcs->glPixelStorei(GL_PACK_ALIGNMENT, 1); //Ensure the pixel data we get from OGL is in the right format
+	funcs->glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels.data()); //Grab the pixels currently in the buffer and store them in the vector
 	threadPool.enqueue(screenshotIOThread, folderPath, width, height, pixels); //I/O will cause a hiccup in the framerate if we don't spin it off into a new asynchronous thread 
-}
-
-void Renderer::draw(DrawMode mode, int32_t numElements)
-{
-	glDrawArrays(static_cast<GLenum>(mode), 0, numElements);
 }

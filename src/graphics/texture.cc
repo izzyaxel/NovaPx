@@ -6,6 +6,7 @@
 
 Texture::Texture(SP<Image> image) //TODO handle 16 bit images in GL
 {
+	this->initializeOpenGLFunctions();
 	std::vector<uint8_t> imageData;
 	for(auto const &pix : image->imageData)
 	{
@@ -31,6 +32,7 @@ Texture::Texture(SP<Image> image) //TODO handle 16 bit images in GL
 
 Texture::Texture(Image &image) //TODO handle 16 bit images in GL
 {
+	this->initializeOpenGLFunctions();
 	std::vector<uint8_t> imageData;
 	for(auto const &pix : image.imageData)
 	{

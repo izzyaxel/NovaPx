@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../graphics/renderer.hh"
-#include "../util/event.hh"
+#include "event.hh"
 
 #include <iris/vec2.hh>
 

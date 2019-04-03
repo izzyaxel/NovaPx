@@ -1,3 +1,4 @@
+#Intended for an MSYS2 environment if being compiled on Windows
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 set(ARCH "x86_64")
 
@@ -49,17 +50,17 @@ set(SRC
 		src/graphics/renderer.cc src/graphics/renderer.hh
 		src/graphics/shader.cc src/graphics/shader.hh
 		src/graphics/texture.cc src/graphics/texture.hh
-		src/graphics/glWidget.cc src/graphics/glWidget.hh
+		src/widgets/glWidget.cc src/widgets/glWidget.hh
 		
-		src/info/globals.hh src/info/globals.cc
+		src/util/globals.hh src/util/globals.cc
 		
-		src/io/io.cc src/io/io.hh
+		src/util/io.cc src/util/io.hh
 		
 		src/util/def.hh
 		src/util/event.hh
 		src/util/threadPool.cc src/util/threadPool.hh
 		src/util/util.cc src/util/util.hh
-		src/util/widget.cc src/util/widget.hh)
+		src/widgets/mainWindowWidget.cc src/widgets/mainWindowWidget.hh)
 
 project(PixelCreator)
 include_directories(include)
@@ -67,15 +68,16 @@ set(CMAKE_AUTOMOC ON)
 find_package(Qt5Widgets REQUIRED)
 
 if(WIN32 OR WIN64)
-	set(LIBS
-			Qt5::Widgets
-			${CMAKE_SOURCE_DIR}/libs/libpng.a
-			${CMAKE_SOURCE_DIR}/libs/libz.a)
+	set(LIBS -lpng -lz)
+	if(CMAKE_BUILD_TYPE MATCHES Release)
+		set(LIBS ${LIBS} Qt5::Widgets)
+	elseif(CMAKE_BUILD_TYPE MATCHES Debug)
+		set(LIBS ${LIBS} Qt5::Widgets)
+	endif()
 elseif(UNIX)
 	set(LIBS png z dl pthread)
 endif()
 
-include_directories(C:/msys64/mingw64/qt5-static/include/)
 add_executable(${PROJECT_NAME} ${SRC})
-set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17) #Qt requires this if we want to use C++17 features
 target_link_libraries(${PROJECT_NAME} ${LIBS})

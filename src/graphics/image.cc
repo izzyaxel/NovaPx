@@ -1,7 +1,7 @@
 #include "image.hh"
 #include "png.hh"
 #include "../util/util.hh"
-#include "../io/io.hh"
+#include "../util/io.hh"
 
 Image::Image(std::string const &filePath, bool srgb)
 {

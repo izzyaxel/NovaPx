@@ -13,6 +13,7 @@ Mesh::~Mesh()
 
 Mesh::Mesh(float const *verts, size_t vertsSize, float const *uvs, size_t uvsSize)
 {
+	this->initializeOpenGLFunctions();
 	size_t constexpr vertexStride = 3 * sizeof(float);
 	size_t constexpr uvStride = 2 * sizeof(float);
 	

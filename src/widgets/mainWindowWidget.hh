@@ -3,13 +3,14 @@
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QMainWindow>
 
-struct Widget : public QMainWindow
+struct MainWindowWidget : public QMainWindow
 {
-	Widget(QWidget *parent = nullptr);
+Q_OBJECT
+
+public:
+	MainWindowWidget();
 	
 	void resizeEvent(QResizeEvent *event) override;
 	void keyPressEvent(QKeyEvent *event) override;
 	void keyReleaseEvent(QKeyEvent *event) override;
-
-Q_OBJECT
 };

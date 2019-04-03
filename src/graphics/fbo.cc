@@ -54,6 +54,7 @@ void FBO::clearFBO(FBO &fbo)
 
 FBO::FBO(uint32_t width, uint32_t height, AttachmentType options, std::string const &name)
 {
+	this->initializeOpenGLFunctions();
 	this->name = name;
 	this->width = width;
 	this->height = height;
@@ -103,6 +104,7 @@ void FBO::print()
 
 FBOPool::FBOPool(size_t alloc, uint32_t width, uint32_t height)
 {
+	this->initializeOpenGLFunctions();
 	this->pool.resize(alloc);
 	for(size_t i = 0; i < alloc; i++)
 	{

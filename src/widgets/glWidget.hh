@@ -4,11 +4,15 @@
 #include <QtWidgets/QOpenGLWidget>
 #include <QtCore/QTimer>
 
-struct GLWidget : public QOpenGLWidget, QOpenGLFunctions_4_5_Core
+struct GLWidget : public QOpenGLWidget
 {
-	QTimer *timer;
+	Q_OBJECT
 	
-	GLWidget(QWidget *parent = Q_NULLPTR);
+public:
+	GLWidget(QWidget *parent = nullptr);
+	
+	QTimer *timer;
+	QOpenGLFunctions_4_5_Core *funcs;
 
 protected:
 	void initializeGL() override;

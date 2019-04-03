@@ -1,5 +1,5 @@
 #include "io.hh"
-#include "../util/util.hh"
+#include "util.hh"
 
 #include <png.h>
 
