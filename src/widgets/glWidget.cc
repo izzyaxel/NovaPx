@@ -14,6 +14,8 @@
 #include <exception>
 #include <ctime>
 #include <chrono>
+#include <iris/vec4.hh>
+#include <iris/shapes.hh>
 
 UP<Shader> objectShader, orthoShader;
 UP<Mesh> llQuadMesh, orthoQuadMesh, centeredQuadMesh;
@@ -105,6 +107,7 @@ void GLWidget::resizeGL(int w, int h)
 	this->glScissor(0, 0, Context::width, Context::height);
 	camera->pos.x() = -(Context::width / 2);
 	camera->pos.y() = -(Context::height / 2);
+	this->v = IR::mat4x4<float>::viewMatrix(IR::quat<float>{}, IR::vec3<float>{camera->pos, 0});
 }
 
 void GLWidget::paintGL()
@@ -149,9 +152,27 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 		
 		default: break;
 	}
-	Mouse::pos.x() = event->pos().x();
-	Mouse::pos.y() = event->pos().y();
+	Mouse::pos.x() = event->x();
+	Mouse::pos.y() = event->y();
 	Mouse::lastClickPos = IR::vec2<int32_t>(event->x(), event->y());
+	this->v.print("V");
+	this->p.print("P");
+	this->invVP = this->v * this->p;
+	this->invVP.print("V*P");
+	this->invVP.invert();
+	this->invVP.print("Inverse VP");
+	
+	IR::vec4<int32_t> worldPoint = IR::vec4<int32_t>{Mouse::pos, 0, 1} * this->invVP;
+	IR::aabb2D<int32_t> canvasBounds(-canvas->scale.x(), canvas->scale.x(), -canvas->scale.y(), canvas->scale.y(), 0, 0);
+	bool insideCanvas = canvasBounds.containsPoint(worldPoint.x(), worldPoint.y());
+	
+	//Mouse::pos.print("Click Widget coords");
+	//worldPoint.print("Click World coords");
+	
+	if(insideCanvas) 
+	{
+		//TODO Find the pixel that was hit and change it
+	}
 }
 
 void GLWidget::mouseReleaseEvent(QMouseEvent *event)

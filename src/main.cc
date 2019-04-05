@@ -15,6 +15,7 @@
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QSplitter>
 
 long long unsigned int ticks = 0;
 uint32_t windowWidth = 800, windowHeight = 600;
@@ -22,7 +23,7 @@ uint32_t majorVersion = 1, minorVersion  = 0, bugfixVersion = 0;
 std::string windowName = "PixelCreator | " + std::to_string(majorVersion) + "." + std::to_string(minorVersion) + "." + std::to_string(bugfixVersion);
 
 QVBoxLayout *mainLayout;
-QHBoxLayout *subLayout;
+QSplitter *contentLayout, *subLayout;
 
 QWidget *center, *timelineContainer, *leftBarContainer, *rightBarContainer;
 MainWindowWidget *mainWindowWidget;
@@ -45,9 +46,25 @@ int main(int argc, char **argv)
 	mainLayout->setContentsMargins(0, 0, 0, 0);
 	mainLayout->setSpacing(0);
 	
-	subLayout = new QHBoxLayout;
+	contentLayout = new QSplitter;
+	contentLayout->setContentsMargins(0, 0, 0, 0);
+	contentLayout->setOrientation(Qt::Vertical);
+	contentLayout->setStyleSheet(R"(
+QSplitter::handle
+{
+	background-color: rgb(120, 120, 120);
+	border: 1px solid rgb(40, 40, 40);
+})");
+	
+	subLayout = new QSplitter;
 	subLayout->setContentsMargins(0, 0, 0, 0);
-	subLayout->setSpacing(0);
+	subLayout->setOrientation(Qt::Horizontal);
+	subLayout->setStyleSheet(R"(
+QSplitter::handle
+{
+	background-color: rgb(120, 120, 120);
+	border: 1px solid rgb(40, 40, 40);
+})");
 	
 	center = new QWidget;
 	
@@ -62,11 +79,11 @@ QMainWindow
 })");
 	
 	canvasWidget = new GLWidget;
-	canvasWidget->setMinimumSize(128, 128);
-	canvasWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	canvasWidget->setMinimumSize(256, 256);
+	canvasWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	
 	timelineContainer = new QWidget;
-	timelineContainer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+	timelineContainer->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	timelineContainer->setStyleSheet(R"(
 QWidget
 {
@@ -74,7 +91,7 @@ QWidget
 })");
 	
 	leftBarContainer = new QWidget;
-	leftBarContainer->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+	leftBarContainer->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	leftBarContainer->setStyleSheet(R"(
 QWidget
 {
@@ -82,7 +99,7 @@ QWidget
 })");
 	
 	rightBarContainer = new QWidget;
-	rightBarContainer->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+	rightBarContainer->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	rightBarContainer->setStyleSheet(R"(
 QWidget
 {
@@ -111,13 +128,20 @@ QMenuBar:item:selected
 	helpMenu = menuBar->addMenu("Help");
 	
 	//Layouts
-	subLayout->addWidget(leftBarContainer, Qt::AlignLeft);
+	subLayout->addWidget(leftBarContainer);
 	subLayout->addWidget(canvasWidget);
-	subLayout->addWidget(rightBarContainer, Qt::AlignRight);
+	subLayout->addWidget(rightBarContainer);
+	subLayout->setStretchFactor(0, 2);
+	subLayout->setStretchFactor(1, 10);
+	subLayout->setStretchFactor(2, 1);
+	
+	contentLayout->addWidget(subLayout);
+	contentLayout->addWidget(timelineContainer);
+	contentLayout->setStretchFactor(0, 5); //TODO not affecting the layout at all
+	contentLayout->setStretchFactor(1, 1);
 	
 	mainLayout->addWidget(menuBar);
-	mainLayout->addLayout(subLayout, 1);
-	mainLayout->addWidget(timelineContainer, Qt::AlignBottom);
+	mainLayout->addWidget(contentLayout);
 	
 	center->setLayout(mainLayout);
 	
