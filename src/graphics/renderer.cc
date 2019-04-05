@@ -12,7 +12,7 @@
 #include <iris/quaternion.hh>
 #include <ctime>
 
-UP<Shader> objectShader;
+/*UP<Shader> objectShader, testShader;
 UP<Mesh> llQuadMesh, orthoQuadMesh;
 
 /// Access types for compute shader imnage binding
@@ -56,6 +56,7 @@ void startComputeShader(uint32_t contextWidth, uint32_t contextHeight, QOpenGLFu
 void initAssets()
 {
 	objectShader = MU<Shader>(defaultVertSource, defaultFragSource);
+	testShader = MU<Shader>(defaultVertSource, testFragSource);
 	llQuadMesh = MU<Mesh>(llQuadVerts, 12, llQuadUVs, 8);
 	orthoQuadMesh = MU<Mesh>(orthoQuadVerts, 12, orthoQuadUVs, 8);
 }
@@ -86,13 +87,13 @@ void Renderer::render(QOpenGLFunctions_4_5_Core *funcs)
 	this->p = IR::mat4x4<float>::orthoProjectionMatrix(0, Context::width, Context::height, 0, 0, 1);
 	
 	//Render the canvas
-	if(canvas && !canvas->empty() && canvas->isDirty())
+	if(canvas )
 	{
 		this->m = IR::mat4x4<float>::modelMatrix(IR::vec3<float>(0, 0, -1), IR::quat<float>{}, IR::vec3<float>(canvas->width, canvas->height, 1));
 		this->mvp = IR::mat4x4<float>::modelViewProjectionMatrix(this->m, this->v, this->p);
-		objectShader->use();
-		objectShader->sendMat4f("mvp", this->mvp);
-		llQuadMesh->use();
+		testShader->use();
+		testShader->sendMat4f("mvp", this->mvp);
+		orthoQuadMesh->use();
 		MS<Texture>(canvas)->use();
 		draw(DrawMode::TRISTRIPS, llQuadMesh->numVerts, funcs);
 	}
@@ -129,4 +130,4 @@ void Renderer::screenshot(std::string const &folderPath, uint32_t width, uint32_
 	funcs->glPixelStorei(GL_PACK_ALIGNMENT, 1); //Ensure the pixel data we get from OGL is in the right format
 	funcs->glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels.data()); //Grab the pixels currently in the buffer and store them in the vector
 	threadPool.enqueue(screenshotIOThread, folderPath, width, height, pixels); //I/O will cause a hiccup in the framerate if we don't spin it off into a new asynchronous thread 
-}
+}*/

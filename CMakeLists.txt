@@ -8,7 +8,7 @@ if(WIN32 OR WIN64)
 	if(CMAKE_BUILD_TYPE MATCHES Release)
 		set(ARCH "x86_64")
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FORTIFY_SOURCE=2 -mmitigate-rop -fPIE")
-		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--high-entropy-va -Wl,--dynamicbase -Wl,--nxcompat")
+		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--high-entropy-va -Wl,--dynamicbase -Wl,--nxcompat -Wl,-Bstatic -s")
 	elseif(CMAKE_BUILD_TYPE MATCHES Debug)
 		message(STATUS "Hardening disabled for debug build")
 	endif()
@@ -18,7 +18,7 @@ elseif(UNIX)
 	if(CMAKE_BUILD_TYPE MATCHES Release)
 		set(ARCH "x86_64")
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FORTIFY_SOURCE=2 -mmitigate-rop -fstack-protector-strong -fPIE")
-		set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,high-entropy-va")
+		set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,high-entropy-va -Wl,-Bstatic")
 	elseif(CMAKE_BUILD_TYPE MATCHES Debug)
 		message(STATUS "Hardening disabled for debug build")
 	endif()
@@ -47,7 +47,6 @@ set(SRC
 		src/graphics/image.cc src/graphics/image.hh
 		src/graphics/mesh.cc src/graphics/mesh.hh
 		src/graphics/png.cc src/graphics/png.hh
-		src/graphics/renderer.cc src/graphics/renderer.hh
 		src/graphics/shader.cc src/graphics/shader.hh
 		src/graphics/texture.cc src/graphics/texture.hh
 		src/widgets/glWidget.cc src/widgets/glWidget.hh
@@ -62,22 +61,20 @@ set(SRC
 		src/util/util.cc src/util/util.hh
 		src/widgets/mainWindowWidget.cc src/widgets/mainWindowWidget.hh)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static -static-libgcc -static-libstdc++")
 project(PixelCreator)
 include_directories(include)
 set(CMAKE_AUTOMOC ON)
 find_package(Qt5Widgets REQUIRED)
 
 if(WIN32 OR WIN64)
-	set(LIBS -lpng -lz)
-	if(CMAKE_BUILD_TYPE MATCHES Release)
-		set(LIBS ${LIBS} Qt5::Widgets)
-	elseif(CMAKE_BUILD_TYPE MATCHES Debug)
-		set(LIBS ${LIBS} Qt5::Widgets)
-	endif()
+	set(LIBS Qt5::Widgets -lpng -lz -lgif)
 elseif(UNIX)
-	set(LIBS png z dl pthread)
+	set(LIBS Qt5::Widgets png z dl pthread gif)
 endif()
 
 add_executable(${PROJECT_NAME} ${SRC})
-set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17) #Qt requires this if we want to use C++17 features
+#Qt requires this if we want to use C++17 features
+
 target_link_libraries(${PROJECT_NAME} ${LIBS})

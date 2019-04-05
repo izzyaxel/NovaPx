@@ -1,11 +1,12 @@
 #pragma once
 
-#include "../graphics/renderer.hh"
 #include "event.hh"
+#include "def.hh"
+#include "../graphics/image.hh"
+#include "../graphics/camera.hh"
 
 #include <iris/vec2.hh>
 
-extern UP<Renderer> renderer;
 extern UP<EventBus> eventBus;
 extern SP<Image> canvas;
 extern SP<Camera> camera;
@@ -21,6 +22,11 @@ namespace Mouse
 	extern bool lmbDown, rmbDown, mmbDown;
 	extern bool lmbDownDrag, rmbDownDrag, mmbDownDrag;
 	extern IR::vec2<int32_t> pos, prevPos, lastClickPos, lastReleasePos;
+}
+
+namespace Keyboard
+{
+	extern bool spaceDown;
 }
 
 namespace Context

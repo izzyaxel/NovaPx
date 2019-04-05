@@ -9,6 +9,7 @@
 
 struct Texture : QOpenGLFunctions_4_5_Core
 {
+	Texture(std::string const &textureFilePath);
 	Texture(SP<Image> image);
 	Texture(Image &image);
 	
@@ -20,5 +21,4 @@ struct Texture : QOpenGLFunctions_4_5_Core
 	uint32_t handle;
 	uint32_t width, height;
 	char colorFormat, bitDepth;
-	bool srgb;
 };

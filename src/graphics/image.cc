@@ -3,7 +3,7 @@
 #include "../util/util.hh"
 #include "../util/io.hh"
 
-Image::Image(std::string const &filePath, bool srgb)
+Image::Image(std::string const &filePath)
 {
 	PNG png = readPNG(filePath);
 	if(png.imageData == nullptr || png.width + png.height == 0 || png.colorFormat == 0 || png.bitDepth == 0) printf("Image Loader: %s could not be read\n", filePath.data());
@@ -11,7 +11,6 @@ Image::Image(std::string const &filePath, bool srgb)
 	this->height = png.height;
 	this->colorFormat = png.colorFormat;
 	this->bitDepth = png.bitDepth;
-	this->srgb = srgb;
 	this->filePath = filePath;
 	uint32_t channels = (png.colorFormat == PNG::COLOR_FMT_RGB ? 3 : 4), stride = channels * (png.bitDepth == 8 ? 1 : 2);
 	uint8_t** imageData = reinterpret_cast<uint8_t**>(png.imageData);
@@ -64,6 +63,11 @@ void Image::setPixel(uint32_t x, uint32_t y, Color &color)
 bool Image::isDirty()
 {
 	return this->dirty;
+}
+
+void Image::markDirty()
+{
+	this->dirty = true;
 }
 
 bool Image::hasUnsavedChanges()

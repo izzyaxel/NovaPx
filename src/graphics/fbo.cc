@@ -12,24 +12,24 @@ void initFBOPool(size_t alloc, uint32_t width, uint32_t height)
 
 void FBO::createFBO(FBO &fbo)
 {
-	glCreateFramebuffers(1, &fbo.handle);
+	this->glCreateFramebuffers(1, &fbo.handle);
 	fbo.bindFBO();
-	glViewport(0, 0, fbo.width, fbo.height);
-	glScissor(0, 0, fbo.width, fbo.height);
-	if(fbo.hasColor) glCreateTextures(GL_TEXTURE_2D, 1, &fbo.colorHandle);
-	if(fbo.hasDepth) glCreateTextures(GL_TEXTURE_2D, 1, &fbo.depthHandle);
-	glTextureStorage2D(fbo.colorHandle, 1, fbo.hasAlpha ? GL_RGBA32F : GL_RGB32F, fbo.width, fbo.height);
-	glNamedFramebufferTexture(fbo.handle, GL_COLOR_ATTACHMENT0, fbo.colorHandle, 0);
+	this->glViewport(0, 0, fbo.width, fbo.height);
+	this->glScissor(0, 0, fbo.width, fbo.height);
+	if(fbo.hasColor) this->glCreateTextures(GL_TEXTURE_2D, 1, &fbo.colorHandle);
+	if(fbo.hasDepth) this->glCreateTextures(GL_TEXTURE_2D, 1, &fbo.depthHandle);
+	this->glTextureStorage2D(fbo.colorHandle, 1, fbo.hasAlpha ? GL_RGBA32F : GL_RGB32F, fbo.width, fbo.height);
+	this->glNamedFramebufferTexture(fbo.handle, GL_COLOR_ATTACHMENT0, fbo.colorHandle, 0);
 	if(fbo.hasDepth)
 	{
-		glTextureStorage2D(fbo.depthHandle, 1, GL_DEPTH_COMPONENT32F, fbo.width, fbo.height);
-		glNamedFramebufferTexture(fbo.handle, GL_DEPTH_ATTACHMENT, fbo.depthHandle, 0);
+		this->glTextureStorage2D(fbo.depthHandle, 1, GL_DEPTH_COMPONENT32F, fbo.width, fbo.height);
+		this->glNamedFramebufferTexture(fbo.handle, GL_DEPTH_ATTACHMENT, fbo.depthHandle, 0);
 	}
 	std::vector<GLenum> drawBuffers;
 	drawBuffers.emplace_back(GL_COLOR_ATTACHMENT0);
 	if(fbo.hasDepth) drawBuffers.emplace_back(GL_COLOR_ATTACHMENT1);
-	glNamedFramebufferDrawBuffers(fbo.handle, static_cast<int32_t>(drawBuffers.size()), drawBuffers.data());
-	GLenum error = glCheckNamedFramebufferStatus(fbo.handle, GL_FRAMEBUFFER);
+	this->glNamedFramebufferDrawBuffers(fbo.handle, static_cast<int32_t>(drawBuffers.size()), drawBuffers.data());
+	GLenum error = this->glCheckNamedFramebufferStatus(fbo.handle, GL_FRAMEBUFFER);
 	if(error != GL_FRAMEBUFFER_COMPLETE)
 	{
 		printf("FBO Creation Error: ");
@@ -42,14 +42,14 @@ void FBO::createFBO(FBO &fbo)
 			default: break;
 		}
 	}
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	this->glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void FBO::clearFBO(FBO &fbo)
 {
-	glDeleteFramebuffers(1, &fbo.handle);
-	glDeleteTextures(1, &fbo.colorHandle);
-	glDeleteTextures(1, &fbo.depthHandle);
+	this->glDeleteFramebuffers(1, &fbo.handle);
+	this->glDeleteTextures(1, &fbo.colorHandle);
+	this->glDeleteTextures(1, &fbo.depthHandle);
 }
 
 FBO::FBO(uint32_t width, uint32_t height, AttachmentType options, std::string const &name)
@@ -72,17 +72,17 @@ FBO::~FBO()
 
 void FBO::bindFBO()
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, this->handle);
+	this->glBindFramebuffer(GL_FRAMEBUFFER, this->handle);
 }
 
 void FBO::bindColor(uint32_t target)
 {
-	glBindTextureUnit(target, this->colorHandle);
+	this->glBindTextureUnit(target, this->colorHandle);
 }
 
 void FBO::bindDepth(uint32_t target)
 {
-	glBindTextureUnit(target, this->depthHandle);
+	this->glBindTextureUnit(target, this->depthHandle);
 }
 
 void FBO::regen(uint32_t width, uint32_t height)
@@ -124,12 +124,12 @@ SP<FBO> FBOPool::getNextAvailableFBO(uint32_t width, uint32_t height)
 				fbo = MS<FBO>(width, height, FBO::COLOR | FBO::ALPHA | FBO::DEPTH, "Pool " + std::to_string(this->pool.size() + 1));
 			}
 			fbo->bindFBO();
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			this->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			return fbo;
 		}
 	}
 	this->pool.push_back(MS<FBO>(width, height, FBO::COLOR | FBO::ALPHA | FBO::DEPTH, "Pool " + std::to_string(this->pool.size() + 1)));
 	this->pool.back()->bindFBO();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	this->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	return this->pool.back();
 }

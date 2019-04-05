@@ -5,10 +5,10 @@
 
 Mesh::~Mesh()
 {
-	glDeleteBuffers(1, &this->vboV);
-	glDeleteBuffers(1, &this->vboU);
-	glDeleteBuffers(1, &this->vboN);
-	glDeleteVertexArrays(1, &this->vao);
+	this->glDeleteBuffers(1, &this->vboV);
+	this->glDeleteBuffers(1, &this->vboU);
+	this->glDeleteBuffers(1, &this->vboN);
+	this->glDeleteVertexArrays(1, &this->vao);
 }
 
 Mesh::Mesh(float const *verts, size_t vertsSize, float const *uvs, size_t uvsSize)
@@ -19,24 +19,24 @@ Mesh::Mesh(float const *verts, size_t vertsSize, float const *uvs, size_t uvsSiz
 	
 	this->numVerts = static_cast<uint32_t>(vertsSize);
 	
-	glCreateVertexArrays(1, &this->vao);
-	glCreateBuffers(1, &this->vboV);
-	glCreateBuffers(1, &this->vboU);
+	this->glCreateVertexArrays(1, &this->vao);
+	this->glCreateBuffers(1, &this->vboV);
+	this->glCreateBuffers(1, &this->vboU);
 	
-	glNamedBufferData(this->vboV, vertsSize * sizeof(float), verts, GL_STATIC_DRAW);
-	glVertexArrayAttribBinding(this->vao, 0, 0);
-	glVertexArrayVertexBuffer(this->vao, 0, this->vboV, 0, vertexStride);
-	glEnableVertexArrayAttrib(this->vao, 0);
-	glVertexArrayAttribFormat(this->vao, 0, 3, GL_FLOAT, GL_FALSE, 0);
+	this->glNamedBufferData(this->vboV, vertsSize * sizeof(float), verts, GL_STATIC_DRAW);
+	this->glVertexArrayAttribBinding(this->vao, 0, 0);
+	this->glVertexArrayVertexBuffer(this->vao, 0, this->vboV, 0, vertexStride);
+	this->glEnableVertexArrayAttrib(this->vao, 0);
+	this->glVertexArrayAttribFormat(this->vao, 0, 3, GL_FLOAT, GL_FALSE, 0);
 	
-	glNamedBufferData(this->vboU, uvsSize * sizeof(float), uvs, GL_STATIC_DRAW);
-	glVertexArrayAttribBinding(this->vao, 1, 1);
-	glVertexArrayVertexBuffer(this->vao, 1, this->vboU, 0, uvStride);
-	glEnableVertexArrayAttrib(this->vao, 1);
-	glVertexArrayAttribFormat(this->vao, 1, 2, GL_FLOAT, GL_FALSE, 0);
+	this->glNamedBufferData(this->vboU, uvsSize * sizeof(float), uvs, GL_STATIC_DRAW);
+	this->glVertexArrayAttribBinding(this->vao, 1, 1);
+	this->glVertexArrayVertexBuffer(this->vao, 1, this->vboU, 0, uvStride);
+	this->glEnableVertexArrayAttrib(this->vao, 1);
+	this->glVertexArrayAttribFormat(this->vao, 1, 2, GL_FLOAT, GL_FALSE, 0);
 }
 
 void Mesh::use()
 {
-	glBindVertexArray(this->vao);
+	this->glBindVertexArray(this->vao);
 }

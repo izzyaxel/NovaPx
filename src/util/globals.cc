@@ -1,6 +1,5 @@
 #include "globals.hh"
 
-UP<Renderer> renderer;
 UP<EventBus> eventBus;
 SP<Image> canvas;
 SP<Camera> camera;
@@ -16,6 +15,11 @@ namespace Mouse
 	bool lmbDown = false, rmbDown = false, mmbDown = false;
 	bool lmbDownDrag = false, rmbDownDrag = false, mmbDownDrag = false;
 	IR::vec2<int32_t> pos, prevPos, lastClickPos, lastReleasePos;
+}
+
+namespace Keyboard
+{
+	bool spaceDown;
 }
 
 namespace Context
