@@ -155,11 +155,24 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 	Mouse::pos = IR::vec2<int32_t>(event->x(), event->y());
 	Mouse::lastClickPos = IR::vec2<int32_t>(event->x(), event->y());
 	
-	IR::mat4x4<float> invVP = this->v * this->p;
-	invVP.invert();
-	invVP.print("InvVP");
-	IR::vec4<float> worldPoint = IR::vec4<float>(Mouse::pos, 0.0f, 1.0f) * invVP;
-	worldPoint.print("Worldspace point");
+	//IR::mat4x4<float> invVP = (this->v * this->p).inverse();
+	//invVP.print("InvVP");
+	//IR::vec4<float> worldPoint = IR::vec4<float>(Mouse::pos, 0.0f, 0.0f) * invVP;
+	//worldPoint.print("Worldspace point");
+	
+	IR::mat4x4<float> v2 =
+			{1, 0, 0, 0,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			1432, 128, 0, 1};
+	IR::mat4x4<float> p2 =
+			{0.000698, 0, 0, 0,
+			0, 0.007812, 0, 0,
+			0, 0, -2, 0,
+			-1, -1, -1, 1};
+	IR::vec4<float> test = {9, 11, 0.5f, 1};
+	IR::mat4x4<float> invVP = (v2 * p2).inverse();
+	(test * invVP).print("Test");
 	
 	IR::aabb2D<float> canvasBounds(IR::vec2<float>(0, 0), canvas->scale);
 	

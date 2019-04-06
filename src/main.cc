@@ -23,7 +23,7 @@ uint32_t majorVersion = 1, minorVersion  = 0, bugfixVersion = 0;
 std::string windowName = "PixelCreator | " + std::to_string(majorVersion) + "." + std::to_string(minorVersion) + "." + std::to_string(bugfixVersion);
 
 QVBoxLayout *mainLayout;
-QSplitter *contentLayout, *subLayout;
+QSplitter *vSplitter, *hSplitter;
 
 QWidget *center, *timelineContainer, *leftBarContainer, *rightBarContainer;
 MainWindowWidget *mainWindowWidget;
@@ -46,25 +46,8 @@ int main(int argc, char **argv)
 	mainLayout->setContentsMargins(0, 0, 0, 0);
 	mainLayout->setSpacing(0);
 	
-	contentLayout = new QSplitter(center);
-	contentLayout->setContentsMargins(0, 0, 0, 0);
-	contentLayout->setOrientation(Qt::Vertical);
-	contentLayout->setStyleSheet(R"(
-QSplitter::handle
-{
-	background-color: rgb(120, 120, 120);
-	border: 1px solid rgb(40, 40, 40);
-})");
-	
-	subLayout = new QSplitter(contentLayout);
-	subLayout->setContentsMargins(0, 0, 0, 0);
-	subLayout->setOrientation(Qt::Horizontal);
-	subLayout->setStyleSheet(R"(
-QSplitter::handle
-{
-	background-color: rgb(120, 120, 120);
-	border: 1px solid rgb(40, 40, 40);
-})");
+	center = new QWidget(mainWindowWidget);
+	center->setLayout(mainLayout);
 	
 	mainWindowWidget = new MainWindowWidget;
 	mainWindowWidget->setWindowTitle(QString::fromStdString(windowName));
@@ -77,13 +60,34 @@ QMainWindow
 	color: rgb(255, 255, 255);
 })");
 	
-	center = new QWidget(mainWindowWidget);
+	vSplitter = new QSplitter(center);
+	vSplitter->setContentsMargins(0, 0, 0, 0);
+	vSplitter->setMinimumSize(100, 100);
+	vSplitter->setOrientation(Qt::Vertical);
+	vSplitter->setStyleSheet(R"(
+QSplitter::handle
+{
+	background-color: rgb(120, 120, 120);
+	border: 1px solid rgb(40, 40, 40);
+})");
 	
-	canvasWidget = new GLWidget(subLayout);
+	hSplitter = new QSplitter(vSplitter);
+	hSplitter->setContentsMargins(0, 0, 0, 0);
+	hSplitter->setMinimumSize(100, 100);
+	hSplitter->setOrientation(Qt::Horizontal);
+	hSplitter->setStyleSheet(R"(
+QSplitter::handle
+{
+	background-color: rgb(120, 120, 120);
+	border: 1px solid rgb(40, 40, 40);
+})");
+	
+	canvasWidget = new GLWidget(hSplitter);
 	canvasWidget->setMinimumSize(256, 256);
 	canvasWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	
-	timelineContainer = new QWidget(contentLayout);
+	timelineContainer = new QWidget(vSplitter);
+	timelineContainer->setMinimumSize(100, 100);
 	timelineContainer->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	timelineContainer->setStyleSheet(R"(
 QWidget
@@ -91,7 +95,8 @@ QWidget
 	background-color: rgb(255, 0, 0);
 })");
 	
-	leftBarContainer = new QWidget(subLayout);
+	leftBarContainer = new QWidget(hSplitter);
+	leftBarContainer->setMinimumSize(100, 100);
 	leftBarContainer->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	leftBarContainer->setStyleSheet(R"(
 QWidget
@@ -99,7 +104,8 @@ QWidget
 	background-color: rgb(0, 255, 0);
 })");
 	
-	rightBarContainer = new QWidget(subLayout);
+	rightBarContainer = new QWidget(hSplitter);
+	rightBarContainer->setMinimumSize(100, 100);
 	rightBarContainer->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	rightBarContainer->setStyleSheet(R"(
 QWidget
@@ -129,22 +135,20 @@ QMenuBar:item:selected
 	helpMenu = menuBar->addMenu("Help");
 	
 	//Layouts
-	subLayout->addWidget(leftBarContainer);
-	subLayout->addWidget(canvasWidget);
-	subLayout->addWidget(rightBarContainer);
-	subLayout->setStretchFactor(0, 2);
-	subLayout->setStretchFactor(1, 10);
-	subLayout->setStretchFactor(2, 1);
+	hSplitter->addWidget(leftBarContainer);
+	hSplitter->addWidget(canvasWidget);
+	hSplitter->addWidget(rightBarContainer);
+	hSplitter->setStretchFactor(0, 2);
+	hSplitter->setStretchFactor(1, 10);
+	hSplitter->setStretchFactor(2, 1);
 	
-	contentLayout->addWidget(subLayout);
-	contentLayout->addWidget(timelineContainer);
-	contentLayout->setStretchFactor(0, 5); //TODO not affecting the layout at all
-	contentLayout->setStretchFactor(1, 1);
+	vSplitter->addWidget(hSplitter);
+	vSplitter->addWidget(timelineContainer);
+	vSplitter->setStretchFactor(0, 5); //TODO not affecting the layout at all
+	vSplitter->setStretchFactor(1, 1);
 	
 	mainLayout->addWidget(menuBar);
-	mainLayout->addWidget(contentLayout);
-	
-	center->setLayout(mainLayout);
+	mainLayout->addWidget(vSplitter);
 	
 	//Actions
 	screenshotAction = new QAction("Save Preview");
