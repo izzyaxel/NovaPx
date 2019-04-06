@@ -207,6 +207,101 @@ namespace Iris
 		/// Invert this mat4x4
 		inline void invert()
 		{
+			T A2323 = this->data[2][2] * this->data[3][3] - this->data[2][3] * this->data[3][2];
+			T A1323 = this->data[2][1] * this->data[3][3] - this->data[2][3] * this->data[3][1];
+			T A1223 = this->data[2][1] * this->data[3][2] - this->data[2][2] * this->data[3][1];
+			T A0323 = this->data[2][0] * this->data[3][3] - this->data[2][3] * this->data[3][0];
+			T A0223 = this->data[2][0] * this->data[3][2] - this->data[2][2] * this->data[3][0];
+			T A0123 = this->data[2][0] * this->data[3][1] - this->data[2][1] * this->data[3][0];
+			T A2313 = this->data[1][2] * this->data[3][3] - this->data[1][3] * this->data[3][2];
+			T A1313 = this->data[1][1] * this->data[3][3] - this->data[1][3] * this->data[3][1];
+			T A1213 = this->data[1][1] * this->data[3][2] - this->data[1][2] * this->data[3][1];
+			T A2312 = this->data[1][2] * this->data[2][3] - this->data[1][3] * this->data[2][2];
+			T A1312 = this->data[1][1] * this->data[2][3] - this->data[1][3] * this->data[2][1];
+			T A1212 = this->data[1][1] * this->data[2][2] - this->data[1][2] * this->data[2][1];
+			T A0313 = this->data[1][0] * this->data[3][3] - this->data[1][3] * this->data[3][0];
+			T A0213 = this->data[1][0] * this->data[3][2] - this->data[1][2] * this->data[3][0];
+			T A0312 = this->data[1][0] * this->data[2][3] - this->data[1][3] * this->data[2][0];
+			T A0212 = this->data[1][0] * this->data[2][2] - this->data[1][2] * this->data[2][0];
+			T A0113 = this->data[1][0] * this->data[3][1] - this->data[1][1] * this->data[3][0];
+			T A0112 = this->data[1][0] * this->data[2][1] - this->data[1][1] * this->data[2][0];
+			
+			T det =   data[0][0] * (data[1][1] * A2323 - data[1][2] * A1323 + data[1][3] * A1223)
+					- data[0][1] * (data[1][0] * A2323 - data[1][2] * A0323 + data[1][3] * A0223)
+					+ data[0][2] * (data[1][0] * A1323 - data[1][1] * A0323 + data[1][3] * A0123)
+					- data[0][3] * (data[1][0] * A1223 - data[1][1] * A0223 + data[1][2] * A0123);
+			det = static_cast<T>(1) / det;
+			
+			*this = mat4x4<T>{
+					det *   (data[1][1] * A2323 - data[1][2] * A1323 + data[1][3] * A1223),
+					det * - (data[0][1] * A2323 - data[0][2] * A1323 + data[0][3] * A1223),
+					det *   (data[0][1] * A2313 - data[0][2] * A1313 + data[0][3] * A1213),
+					det * - (data[0][1] * A2312 - data[0][2] * A1312 + data[0][3] * A1212),
+					det * - (data[1][0] * A2323 - data[1][2] * A0323 + data[1][3] * A0223),
+					det *   (data[0][0] * A2323 - data[0][2] * A0323 + data[0][3] * A0223),
+					det * - (data[0][0] * A2313 - data[0][2] * A0313 + data[0][3] * A0213),
+					det *   (data[0][0] * A2312 - data[0][2] * A0312 + data[0][3] * A0212),
+					det *   (data[1][0] * A1323 - data[1][1] * A0323 + data[1][3] * A0123),
+					det * - (data[0][0] * A1323 - data[0][1] * A0323 + data[0][3] * A0123),
+					det *   (data[0][0] * A1313 - data[0][1] * A0313 + data[0][3] * A0113),
+					det * - (data[0][0] * A1312 - data[0][1] * A0312 + data[0][3] * A0112),
+					det * - (data[1][0] * A1223 - data[1][1] * A0223 + data[1][2] * A0123),
+					det *   (data[0][0] * A1223 - data[0][1] * A0223 + data[0][2] * A0123),
+					det * - (data[0][0] * A1213 - data[0][1] * A0213 + data[0][2] * A0113),
+					det *   (data[0][0] * A1212 - data[0][1] * A0212 + data[0][2] * A0112),
+				};
+		}
+		
+		/// Get a new inverted mat4x4 from this one
+		inline mat4x4<T> inverse() const
+		{
+			T A2323 = this->data[2][2] * this->data[3][3] - this->data[2][3] * this->data[3][2];
+			T A1323 = this->data[2][1] * this->data[3][3] - this->data[2][3] * this->data[3][1];
+			T A1223 = this->data[2][1] * this->data[3][2] - this->data[2][2] * this->data[3][1];
+			T A0323 = this->data[2][0] * this->data[3][3] - this->data[2][3] * this->data[3][0];
+			T A0223 = this->data[2][0] * this->data[3][2] - this->data[2][2] * this->data[3][0];
+			T A0123 = this->data[2][0] * this->data[3][1] - this->data[2][1] * this->data[3][0];
+			T A2313 = this->data[1][2] * this->data[3][3] - this->data[1][3] * this->data[3][2];
+			T A1313 = this->data[1][1] * this->data[3][3] - this->data[1][3] * this->data[3][1];
+			T A1213 = this->data[1][1] * this->data[3][2] - this->data[1][2] * this->data[3][1];
+			T A2312 = this->data[1][2] * this->data[2][3] - this->data[1][3] * this->data[2][2];
+			T A1312 = this->data[1][1] * this->data[2][3] - this->data[1][3] * this->data[2][1];
+			T A1212 = this->data[1][1] * this->data[2][2] - this->data[1][2] * this->data[2][1];
+			T A0313 = this->data[1][0] * this->data[3][3] - this->data[1][3] * this->data[3][0];
+			T A0213 = this->data[1][0] * this->data[3][2] - this->data[1][2] * this->data[3][0];
+			T A0312 = this->data[1][0] * this->data[2][3] - this->data[1][3] * this->data[2][0];
+			T A0212 = this->data[1][0] * this->data[2][2] - this->data[1][2] * this->data[2][0];
+			T A0113 = this->data[1][0] * this->data[3][1] - this->data[1][1] * this->data[3][0];
+			T A0112 = this->data[1][0] * this->data[2][1] - this->data[1][1] * this->data[2][0];
+			
+			T det =   data[0][0] * (data[1][1] * A2323 - data[1][2] * A1323 + data[1][3] * A1223)
+					- data[0][1] * (data[1][0] * A2323 - data[1][2] * A0323 + data[1][3] * A0223)
+					+ data[0][2] * (data[1][0] * A1323 - data[1][1] * A0323 + data[1][3] * A0123)
+					- data[0][3] * (data[1][0] * A1223 - data[1][1] * A0223 + data[1][2] * A0123);
+			det = static_cast<T>(1) / det;
+			
+			return mat4x4<T>{
+					det *   (data[1][1] * A2323 - data[1][2] * A1323 + data[1][3] * A1223),
+					det * - (data[0][1] * A2323 - data[0][2] * A1323 + data[0][3] * A1223),
+					det *   (data[0][1] * A2313 - data[0][2] * A1313 + data[0][3] * A1213),
+					det * - (data[0][1] * A2312 - data[0][2] * A1312 + data[0][3] * A1212),
+					det * - (data[1][0] * A2323 - data[1][2] * A0323 + data[1][3] * A0223),
+					det *   (data[0][0] * A2323 - data[0][2] * A0323 + data[0][3] * A0223),
+					det * - (data[0][0] * A2313 - data[0][2] * A0313 + data[0][3] * A0213),
+					det *   (data[0][0] * A2312 - data[0][2] * A0312 + data[0][3] * A0212),
+					det *   (data[1][0] * A1323 - data[1][1] * A0323 + data[1][3] * A0123),
+					det * - (data[0][0] * A1323 - data[0][1] * A0323 + data[0][3] * A0123),
+					det *   (data[0][0] * A1313 - data[0][1] * A0313 + data[0][3] * A0113),
+					det * - (data[0][0] * A1312 - data[0][1] * A0312 + data[0][3] * A0112),
+					det * - (data[1][0] * A1223 - data[1][1] * A0223 + data[1][2] * A0123),
+					det *   (data[0][0] * A1223 - data[0][1] * A0223 + data[0][2] * A0123),
+					det * - (data[0][0] * A1213 - data[0][1] * A0213 + data[0][2] * A0113),
+					det *   (data[0][0] * A1212 - data[0][1] * A0212 + data[0][2] * A0112),
+			};
+		}
+		
+		/*inline void invert()
+		{
 			this->data[0][0] = this->data[1][2] * this->data[2][3] * this->data[3][1] - this->data[1][3] * this->data[2][2] * this->data[3][1] + this->data[1][3] * this->data[2][1] * this->data[3][2] - this->data[1][1] * this->data[2][3] * this->data[3][2] - this->data[1][2] * this->data[2][1] * this->data[3][3] + this->data[1][1] * this->data[2][2] * this->data[3][3];
 			this->data[0][1] = this->data[0][3] * this->data[2][2] * this->data[3][1] - this->data[0][2] * this->data[2][3] * this->data[3][1] - this->data[0][3] * this->data[2][1] * this->data[3][2] + this->data[0][1] * this->data[2][3] * this->data[3][2] + this->data[0][2] * this->data[2][1] * this->data[3][3] - this->data[0][1] * this->data[2][2] * this->data[3][3];
 			this->data[0][2] = this->data[0][2] * this->data[1][3] * this->data[3][1] - this->data[0][3] * this->data[1][2] * this->data[3][1] + this->data[0][3] * this->data[1][1] * this->data[3][2] - this->data[0][1] * this->data[1][3] * this->data[3][2] - this->data[0][2] * this->data[1][1] * this->data[3][3] + this->data[0][1] * this->data[1][2] * this->data[3][3];
@@ -226,7 +321,6 @@ namespace Iris
 			*this = *this * scaleMat(vec3<T>{1 / this->determinant()});
 		}
 		
-		/// Get a new inverted mat4x4 from this one
 		inline mat4x4<T> inverse() const
 		{
 			mat4x4<T> out;
@@ -248,7 +342,7 @@ namespace Iris
 			out[3][3] = this->data[0][1] * this->data[1][2] * this->data[2][0] - this->data[0][2] * this->data[1][1] * this->data[2][0] + this->data[0][2] * this->data[1][0] * this->data[2][1] - this->data[0][0] * this->data[1][2] * this->data[2][1] - this->data[0][1] * this->data[1][0] * this->data[2][2] + this->data[0][0] * this->data[1][1] * this->data[2][2];
 			out = out * scaleMat(vec3<T>{1 / out.determinant()});
 			return out;
-		}
+		}*/
 		
 		/// Transpose this 4x4 matrix
 		inline mat4x4<T> transpose() const

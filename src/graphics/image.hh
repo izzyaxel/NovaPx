@@ -32,7 +32,7 @@ struct Image
 	char colorFormat = 'a', bitDepth = 'a';
 	std::string filePath;
 	std::vector<Color> imageData;
-	IR::vec2<float> scale{1, 1};
+	IR::vec2<int32_t> scale{1, 1};
 
 private:
 	bool dirty = false, diskDirty = true;

@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 	mainLayout->setContentsMargins(0, 0, 0, 0);
 	mainLayout->setSpacing(0);
 	
-	contentLayout = new QSplitter;
+	contentLayout = new QSplitter(center);
 	contentLayout->setContentsMargins(0, 0, 0, 0);
 	contentLayout->setOrientation(Qt::Vertical);
 	contentLayout->setStyleSheet(R"(
@@ -56,7 +56,7 @@ QSplitter::handle
 	border: 1px solid rgb(40, 40, 40);
 })");
 	
-	subLayout = new QSplitter;
+	subLayout = new QSplitter(contentLayout);
 	subLayout->setContentsMargins(0, 0, 0, 0);
 	subLayout->setOrientation(Qt::Horizontal);
 	subLayout->setStyleSheet(R"(
@@ -66,10 +66,9 @@ QSplitter::handle
 	border: 1px solid rgb(40, 40, 40);
 })");
 	
-	center = new QWidget;
-	
 	mainWindowWidget = new MainWindowWidget;
 	mainWindowWidget->setWindowTitle(QString::fromStdString(windowName));
+	mainWindowWidget->setMinimumSize(640, 480);
 	mainWindowWidget->setCentralWidget(center);
 	mainWindowWidget->setStyleSheet(R"(
 QMainWindow
@@ -78,11 +77,13 @@ QMainWindow
 	color: rgb(255, 255, 255);
 })");
 	
-	canvasWidget = new GLWidget;
+	center = new QWidget(mainWindowWidget);
+	
+	canvasWidget = new GLWidget(subLayout);
 	canvasWidget->setMinimumSize(256, 256);
 	canvasWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	
-	timelineContainer = new QWidget;
+	timelineContainer = new QWidget(contentLayout);
 	timelineContainer->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	timelineContainer->setStyleSheet(R"(
 QWidget
@@ -90,7 +91,7 @@ QWidget
 	background-color: rgb(255, 0, 0);
 })");
 	
-	leftBarContainer = new QWidget;
+	leftBarContainer = new QWidget(subLayout);
 	leftBarContainer->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	leftBarContainer->setStyleSheet(R"(
 QWidget
@@ -98,7 +99,7 @@ QWidget
 	background-color: rgb(0, 255, 0);
 })");
 	
-	rightBarContainer = new QWidget;
+	rightBarContainer = new QWidget(subLayout);
 	rightBarContainer->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	rightBarContainer->setStyleSheet(R"(
 QWidget
@@ -107,7 +108,7 @@ QWidget
 })");
 	
 	//Menus
-	menuBar = new QMenuBar;
+	menuBar = new QMenuBar(center);
 	menuBar->setStyleSheet(R"(
 QMenuBar
 {

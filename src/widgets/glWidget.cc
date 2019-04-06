@@ -152,27 +152,22 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 		
 		default: break;
 	}
-	Mouse::pos.x() = event->x();
-	Mouse::pos.y() = event->y();
+	Mouse::pos = IR::vec2<int32_t>(event->x(), event->y());
 	Mouse::lastClickPos = IR::vec2<int32_t>(event->x(), event->y());
-	this->v.print("V");
-	this->p.print("P");
-	this->invVP = this->v * this->p;
-	this->invVP.print("V*P");
-	this->invVP.invert();
-	this->invVP.print("Inverse VP");
 	
-	IR::vec4<int32_t> worldPoint = IR::vec4<int32_t>{Mouse::pos, 0, 1} * this->invVP;
-	IR::aabb2D<int32_t> canvasBounds(-canvas->scale.x(), canvas->scale.x(), -canvas->scale.y(), canvas->scale.y(), 0, 0);
-	bool insideCanvas = canvasBounds.containsPoint(worldPoint.x(), worldPoint.y());
+	IR::mat4x4<float> invVP = this->v * this->p;
+	invVP.invert();
+	invVP.print("InvVP");
+	IR::vec4<float> worldPoint = IR::vec4<float>(Mouse::pos, 0.0f, 1.0f) * invVP;
+	worldPoint.print("Worldspace point");
 	
-	//Mouse::pos.print("Click Widget coords");
-	//worldPoint.print("Click World coords");
+	IR::aabb2D<float> canvasBounds(IR::vec2<float>(0, 0), canvas->scale);
 	
-	if(insideCanvas) 
+/*	if(canvasBounds.containsPoint(imagespacePoint.x(), imagespacePoint.y())) 
 	{
-		//TODO Find the pixel that was hit and change it
-	}
+		printf("Clicked inside canvas\n\n");
+		//canvas->setPixel();
+	}*/
 }
 
 void GLWidget::mouseReleaseEvent(QMouseEvent *event)

@@ -71,6 +71,17 @@ namespace Iris
 			this->centerY = centerY;
 		}
 		
+		inline constexpr aabb2D(vec2<T> center, vec2<T> dimensions)
+		{
+			this->centerX = center.x();
+			this->centerY = center.y();
+			T halfX = dimensions.x() / static_cast<T>(2), halfY = dimensions.y() / static_cast<T>(2);
+			this->minX = this->centerX - halfX;
+			this->maxX = this->centerX + halfX;
+			this->minY = this->centerY - halfY;
+			this->maxY = this->centerY + halfY;
+		}
+		
 		/// Reconstruct this AABB
 		inline void construct(T minX, T maxX, T minY, T maxY)
 		{
