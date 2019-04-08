@@ -15,10 +15,8 @@
 #include <ctime>
 #include <chrono>
 #include <iris/vec4.hh>
+#include <iris/vec2.hh>
 #include <iris/shapes.hh>
-
-UP<Shader> objectShader, orthoShader;
-UP<Mesh> llQuadMesh, orthoQuadMesh, centeredQuadMesh;
 
 void screenshotIOThread(std::string const &folderPath, uint32_t width, uint32_t height, std::vector<unsigned char> pixels)
 {
@@ -40,33 +38,25 @@ void screenshotIOThread(std::string const &folderPath, uint32_t width, uint32_t 
 
 GLWidget::GLWidget(QWidget *parent) : QOpenGLWidget(parent)
 {
-	camera = MS<Camera>();
-	camera->pos = {-100, 100};
-	
 	this->timer = new QTimer(this);
 	QObject::connect(this->timer, &QTimer::timeout, this->timer, [&](){this->update();});
 	this->timer->setInterval(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::duration<double>(1.0 / 60.0)));
 	this->timer->start();
 	
 	QSurfaceFormat fmt = QSurfaceFormat::defaultFormat();
-	fmt.setMajorVersion(4);
-	fmt.setMinorVersion(5);
-	fmt.setDepthBufferSize(24);
+	fmt.setVersion(4, 5);
 	fmt.setProfile(QSurfaceFormat::OpenGLContextProfile::CoreProfile);
 	fmt.setSwapInterval(1);
 	fmt.setSwapBehavior(QSurfaceFormat::SwapBehavior::DoubleBuffer);
 	this->setFormat(fmt);
-	this->setFocusPolicy(Qt::ClickFocus);
+	this->setFocusPolicy(Qt::StrongFocus);
 }
 
 GLWidget::~GLWidget()
 {
 	this->makeCurrent();
-	objectShader.reset();
-	orthoShader.reset();
-	llQuadMesh.reset();
-	orthoQuadMesh.reset();
-	centeredQuadMesh.reset();
+	Assets::objectShader.reset();
+	Assets::centeredQuadMesh.reset();
 }
 
 void GLWidget::initializeGL()
@@ -75,7 +65,7 @@ void GLWidget::initializeGL()
 	int major, minor;
 	this->glGetIntegerv(GL_MAJOR_VERSION, &major);
 	this->glGetIntegerv(GL_MINOR_VERSION, &minor);
-	if(major != 4 && minor < 5) throw std::runtime_error("Couldn't start OpenGL, your graphics card doesn't support version 4.5");
+	if(major != 4 && minor < 5) throw std::runtime_error("Couldn't start OpenGL, your graphics card doesn't support version 4.5+");
 	this->glEnable(GL_DEPTH_TEST);
 	this->glEnable(GL_SCISSOR_TEST);
 	this->glEnable(GL_BLEND);
@@ -83,18 +73,15 @@ void GLWidget::initializeGL()
 	this->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	this->glViewport(0, 0, Context::width, Context::height);
 	this->glScissor(0, 0, Context::width, Context::height);
-	this->glClearColor(0.33f, 0.33f, 0.33f, 0.0f);
+	this->glClearColor(0.33f, 0.33f, 0.33f, 1.0f);
 	this->glLineWidth(3.0f);
 	this->glEnable(GL_LINE_SMOOTH);
 	this->glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 	this->glPointSize(6.0f);
 	
 	//Initialize assets
-	objectShader = MU<Shader>(defaultVertSource, defaultFragSource);
-	orthoShader = MU<Shader>(orthoVertSource, orthoFragSource);
-	llQuadMesh = MU<Mesh>(llQuadVerts, 12, llQuadUVs, 8);
-	orthoQuadMesh = MU<Mesh>(orthoQuadVerts, 12, orthoQuadUVs, 8);
-	centeredQuadMesh = MU<Mesh>(centeredQuadVerts, 12, centeredQuadUVs, 8);
+	Assets::objectShader = MU<Shader>(defaultVertSource, defaultFragSource);
+	Assets::centeredQuadMesh = MU<Mesh>(centeredQuadVerts, 12, centeredQuadUVs, 8);
 	
 	canvas = MS<Image>(getCWD() + "test.png");
 }
@@ -105,9 +92,9 @@ void GLWidget::resizeGL(int w, int h)
 	Context::height = static_cast<uint32_t>(h);
 	this->glViewport(0, 0, Context::width, Context::height);
 	this->glScissor(0, 0, Context::width, Context::height);
-	camera->pos.x() = -(Context::width / 2);
-	camera->pos.y() = -(Context::height / 2);
-	this->v = IR::mat4x4<float>::viewMatrix(IR::quat<float>{}, IR::vec3<float>{camera->pos, 0});
+	Camera::pos.x() = -(Context::width / 2);
+	Camera::pos.y() = -(Context::height / 2);
+	this->v = IR::viewMatrix<float>(IR::quat<float>{}, IR::vec3<float>{Camera::pos, 0});
 }
 
 void GLWidget::paintGL()
@@ -115,13 +102,16 @@ void GLWidget::paintGL()
 	if(canvas)
 	{
 		this->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		this->v = IR::mat4x4<float>::viewMatrix(IR::quat<float>{}, IR::vec3<float>{camera->pos, 0});
-		this->p = IR::mat4x4<float>::orthoProjectionMatrix(0, Context::width, Context::height, 0, 0, 1);
-		this->m = IR::mat4x4<float>::modelMatrix(IR::vec3<float>(0, 0, -0.5f), IR::quat<float>{}, IR::vec3<float>(canvas->width * canvas->scale.x(), canvas->height * canvas->scale.y(), 1));
-		this->mvp = IR::mat4x4<float>::modelViewProjectionMatrix(this->m, this->v, this->p);
-		objectShader->use();
-		objectShader->sendMat4f("mvp", this->mvp);
-		centeredQuadMesh->use();
+		this->v = IR::viewMatrix<float>(IR::quat<float>{}, IR::vec3<float>{Camera::pos, 0});
+		this->p = IR::orthoProjectionMatrix<float>(0, Context::width, Context::height, 0, 0, 1);
+		this->m = IR::modelMatrix<float>(IR::vec3<float>(0, 0, -0.5f), IR::quat<float>{}, IR::vec3<float>(canvas->width * canvas->scale.x(), canvas->height * canvas->scale.y(), 1));
+		this->mvp = IR::modelViewProjectionMatrix<float>(this->m, this->v, this->p);
+		Assets::objectShader->use();
+		Assets::objectShader->sendMat4f("mvp", this->mvp);
+		Assets::objectShader->sendUInt("gridSize", State::gridSize);
+		Assets::objectShader->sendVec3f("color1", State::transparencyGridColor1.asRGBf());
+		Assets::objectShader->sendVec3f("color2", State::transparencyGridColor2.asRGBf());
+		Assets::centeredQuadMesh->use();
 		SP<Texture> canvasTexture = MS<Texture>(canvas);
 		canvasTexture->use(0);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -131,6 +121,35 @@ void GLWidget::paintGL()
 	{
 		this->screenshot(Info::screenshotDir, Context::width, Context::height);
 		Info::screenshotQueued = false;
+	}
+}
+
+void modifyCanvas()
+{
+	IR::vec2<int32_t> worldspaceClick = Mouse::pos + Camera::pos;
+	worldspaceClick.y() = -worldspaceClick.y();
+	IR::vec2<uint32_t> curCanvasSize(canvas->scale * IR::vec2<uint32_t>(canvas->width, canvas->height));
+	IR::vec2<int32_t> canvasOffsets(curCanvasSize / 2.0f);
+	if(worldspaceClick.x() > -canvasOffsets.x() && worldspaceClick.x() < canvasOffsets.x() && worldspaceClick.y() > -canvasOffsets.y() && worldspaceClick.y() < canvasOffsets.y())
+	{
+		IR::vec2<uint32_t> imageSpaceClick(static_cast<uint32_t>(std::abs(worldspaceClick.x() + canvasOffsets.x())), static_cast<uint32_t>(std::abs(worldspaceClick.y() - canvasOffsets.y())));
+		IR::vec2<uint32_t> pixelCoord = imageSpaceClick / (curCanvasSize / IR::vec2<uint32_t>(canvas->width, canvas->height));
+		switch(State::tool)
+		{
+			case Tools::BRUSH:
+				canvas->setPixel(pixelCoord.x(), pixelCoord.y(), State::curColor);
+				break;
+			
+			case Tools::ERASER:
+				canvas->setPixel(pixelCoord.x(), pixelCoord.y(), State::eraserColor);
+				break;
+			
+			case Tools::EYEDROPPER:
+				State::curColor = canvas->getPixel(pixelCoord.x(), pixelCoord.y());
+				break;
+			
+			default: break;
+		}
 	}
 }
 
@@ -155,32 +174,7 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 	Mouse::pos = IR::vec2<int32_t>(event->x(), event->y());
 	Mouse::lastClickPos = IR::vec2<int32_t>(event->x(), event->y());
 	
-	//IR::mat4x4<float> invVP = (this->v * this->p).inverse();
-	//invVP.print("InvVP");
-	//IR::vec4<float> worldPoint = IR::vec4<float>(Mouse::pos, 0.0f, 0.0f) * invVP;
-	//worldPoint.print("Worldspace point");
-	
-	IR::mat4x4<float> v2 =
-			{1, 0, 0, 0,
-			0, 1, 0, 0,
-			0, 0, 1, 0,
-			1432, 128, 0, 1};
-	IR::mat4x4<float> p2 =
-			{0.000698, 0, 0, 0,
-			0, 0.007812, 0, 0,
-			0, 0, -2, 0,
-			-1, -1, -1, 1};
-	IR::vec4<float> test = {9, 11, 0.5f, 1};
-	IR::mat4x4<float> invVP = (v2 * p2).inverse();
-	(test * invVP).print("Test");
-	
-	IR::aabb2D<float> canvasBounds(IR::vec2<float>(0, 0), canvas->scale);
-	
-/*	if(canvasBounds.containsPoint(imagespacePoint.x(), imagespacePoint.y())) 
-	{
-		printf("Clicked inside canvas\n\n");
-		//canvas->setPixel();
-	}*/
+	modifyCanvas();
 }
 
 void GLWidget::mouseReleaseEvent(QMouseEvent *event)
@@ -219,17 +213,19 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 	if(Mouse::lmbDownDrag && Keyboard::spaceDown)
 	{
 		IR::vec2<int32_t> delta = Mouse::pos - Mouse::prevPos;
-		//delta /= 1.5f;
 		delta.x() = -delta.x();
-		camera->pos += delta;
+		Camera::pos += delta;
+	}
+	else
+	{
+		modifyCanvas();
 	}
 }
 
 void GLWidget::wheelEvent(QWheelEvent *event)
 {
 	canvas->scale += event->delta() > 0 ? 1 : -1;
-	if(canvas->scale.x() < 1) canvas->scale.x() = 1;
-	if(canvas->scale.y() < 1) canvas->scale.y() = 1;
+	canvas->addScale(IR::vec2<int32_t>{event->delta() > 0 ? 1 : -1});
 }
 
 void GLWidget::keyPressEvent(QKeyEvent *event)
@@ -248,5 +244,5 @@ void GLWidget::screenshot(std::string const &folderPath, uint32_t width, uint32_
 	pixels.resize(width * height * 3); //Preallocate
 	this->glPixelStorei(GL_PACK_ALIGNMENT, 1); //Ensure the pixel data we get from OGL is in the right format
 	this->glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels.data()); //Grab the pixels currently in the buffer and store them in the vector
-	threadPool.enqueue(screenshotIOThread, folderPath, width, height, pixels); //I/O will cause a hiccup in the framerate if we don't spin it off into a new asynchronous thread 
+	threadPool.enqueue(screenshotIOThread, folderPath, width, height, pixels); //I/O will cause a hiccup in the framerate if we don't spin it off into a new async thread 
 }

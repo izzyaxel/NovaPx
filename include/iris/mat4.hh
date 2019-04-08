@@ -4,6 +4,7 @@
 #include "general.hh"
 
 #include <ctgmath>
+#include <array>
 
 namespace Iris
 {
@@ -17,6 +18,9 @@ namespace Iris
 		             {0, 1, 0, 0},
 		             {0, 0, 1, 0},
 		             {0, 0, 0, 1}};
+		/*using rowType = std::array<T, 4>;
+		using dataType = std::array<rowType, 4>;
+		dataType data;*/
 		
 		inline constexpr mat4x4<T>() = default;
 		
@@ -163,186 +167,117 @@ namespace Iris
 		inline T determinant() const
 		{
 			return
-					this->data[0][3] * this->data[1][2] * this->data[2][1] * this->data[3][0] - this->data[0][2] * this->data[1][3] * this->data[2][1] * this->data[3][0] - this->data[0][3] * this->data[1][1] * this->data[2][2] * this->data[3][0] + this->data[0][1] * this->data[1][3] * this->data[2][2] * this->data[3][0] +
-					this->data[0][2] * this->data[1][1] * this->data[2][3] * this->data[3][0] - this->data[0][1] * this->data[1][2] * this->data[2][3] * this->data[3][0] - this->data[0][3] * this->data[1][2] * this->data[2][0] * this->data[3][1] + this->data[0][2] * this->data[1][3] * this->data[2][0] * this->data[3][1] +
-					this->data[0][3] * this->data[1][0] * this->data[2][2] * this->data[3][1] - this->data[0][0] * this->data[1][3] * this->data[2][2] * this->data[3][1] - this->data[0][2] * this->data[1][0] * this->data[2][3] * this->data[3][1] + this->data[0][0] * this->data[1][2] * this->data[2][3] * this->data[3][1] +
-					this->data[0][3] * this->data[1][1] * this->data[2][0] * this->data[3][2] - this->data[0][1] * this->data[1][3] * this->data[2][0] * this->data[3][2] - this->data[0][3] * this->data[1][0] * this->data[2][1] * this->data[3][2] + this->data[0][0] * this->data[1][3] * this->data[2][1] * this->data[3][2] +
-					this->data[0][1] * this->data[1][0] * this->data[2][3] * this->data[3][2] - this->data[0][0] * this->data[1][1] * this->data[2][3] * this->data[3][2] - this->data[0][2] * this->data[1][1] * this->data[2][0] * this->data[3][3] + this->data[0][1] * this->data[1][2] * this->data[2][0] * this->data[3][3] +
-					this->data[0][2] * this->data[1][0] * this->data[2][1] * this->data[3][3] - this->data[0][0] * this->data[1][2] * this->data[2][1] * this->data[3][3] - this->data[0][1] * this->data[1][0] * this->data[2][2] * this->data[3][3] + this->data[0][0] * this->data[1][1] * this->data[2][2] * this->data[3][3];
+					this->data[0][3] * this->data[1][2] * this->data[2][1] * this->data[3][0] - this->data[0][2] * this->data[1][3] * this->data[2][1] * this->data[3][0] -
+					this->data[0][3] * this->data[1][1] * this->data[2][2] * this->data[3][0] + this->data[0][1] * this->data[1][3] * this->data[2][2] * this->data[3][0] +
+					this->data[0][2] * this->data[1][1] * this->data[2][3] * this->data[3][0] - this->data[0][1] * this->data[1][2] * this->data[2][3] * this->data[3][0] -
+					this->data[0][3] * this->data[1][2] * this->data[2][0] * this->data[3][1] + this->data[0][2] * this->data[1][3] * this->data[2][0] * this->data[3][1] +
+					this->data[0][3] * this->data[1][0] * this->data[2][2] * this->data[3][1] - this->data[0][0] * this->data[1][3] * this->data[2][2] * this->data[3][1] -
+					this->data[0][2] * this->data[1][0] * this->data[2][3] * this->data[3][1] + this->data[0][0] * this->data[1][2] * this->data[2][3] * this->data[3][1] +
+					this->data[0][3] * this->data[1][1] * this->data[2][0] * this->data[3][2] - this->data[0][1] * this->data[1][3] * this->data[2][0] * this->data[3][2] -
+					this->data[0][3] * this->data[1][0] * this->data[2][1] * this->data[3][2] + this->data[0][0] * this->data[1][3] * this->data[2][1] * this->data[3][2] +
+					this->data[0][1] * this->data[1][0] * this->data[2][3] * this->data[3][2] - this->data[0][0] * this->data[1][1] * this->data[2][3] * this->data[3][2] -
+					this->data[0][2] * this->data[1][1] * this->data[2][0] * this->data[3][3] + this->data[0][1] * this->data[1][2] * this->data[2][0] * this->data[3][3] +
+					this->data[0][2] * this->data[1][0] * this->data[2][1] * this->data[3][3] - this->data[0][0] * this->data[1][2] * this->data[2][1] * this->data[3][3] -
+					this->data[0][1] * this->data[1][0] * this->data[2][2] * this->data[3][3] + this->data[0][0] * this->data[1][1] * this->data[2][2] * this->data[3][3];
 		}
 		
-		inline static mat4x4<T> translateMat(vec3<T> const &in)
-		{
-			mat4x4<T> out{};
-			out[3][0] = in[0];
-			out[3][1] = in[1];
-			out[3][2] = in[2];
-			return out;
-		}
-		
-		inline static mat4x4<T> rotateMat(quat<T> const &in)
-		{
-			return mat4x4<T>{in};
-		}
-		
-		/// Convert a vec3 scale into a mat4x4 representation
-		inline static mat4x4<T> scaleMat(vec3<T> const &scale)
-		{
-			mat4x4<T> out{};
-			out[0][0] = scale[0];
-			out[1][1] = scale[1];
-			out[2][2] = scale[2];
-			return out;
-		}
-		
-		inline static mat4x4<T> scaleMat(T scalar)
-		{
-			mat4x4<T> out;
-			out[0][0] = scalar;
-			out[1][1] = scalar;
-			out[2][2] = scalar;
-			return out;
-		}
-		
+		//row-column reversed
 		/// Invert this mat4x4
 		inline void invert()
 		{
-			T A2323 = this->data[2][2] * this->data[3][3] - this->data[2][3] * this->data[3][2];
-			T A1323 = this->data[2][1] * this->data[3][3] - this->data[2][3] * this->data[3][1];
-			T A1223 = this->data[2][1] * this->data[3][2] - this->data[2][2] * this->data[3][1];
-			T A0323 = this->data[2][0] * this->data[3][3] - this->data[2][3] * this->data[3][0];
-			T A0223 = this->data[2][0] * this->data[3][2] - this->data[2][2] * this->data[3][0];
-			T A0123 = this->data[2][0] * this->data[3][1] - this->data[2][1] * this->data[3][0];
-			T A2313 = this->data[1][2] * this->data[3][3] - this->data[1][3] * this->data[3][2];
-			T A1313 = this->data[1][1] * this->data[3][3] - this->data[1][3] * this->data[3][1];
-			T A1213 = this->data[1][1] * this->data[3][2] - this->data[1][2] * this->data[3][1];
-			T A2312 = this->data[1][2] * this->data[2][3] - this->data[1][3] * this->data[2][2];
-			T A1312 = this->data[1][1] * this->data[2][3] - this->data[1][3] * this->data[2][1];
-			T A1212 = this->data[1][1] * this->data[2][2] - this->data[1][2] * this->data[2][1];
-			T A0313 = this->data[1][0] * this->data[3][3] - this->data[1][3] * this->data[3][0];
-			T A0213 = this->data[1][0] * this->data[3][2] - this->data[1][2] * this->data[3][0];
-			T A0312 = this->data[1][0] * this->data[2][3] - this->data[1][3] * this->data[2][0];
-			T A0212 = this->data[1][0] * this->data[2][2] - this->data[1][2] * this->data[2][0];
-			T A0113 = this->data[1][0] * this->data[3][1] - this->data[1][1] * this->data[3][0];
-			T A0112 = this->data[1][0] * this->data[2][1] - this->data[1][1] * this->data[2][0];
+			T A2323 = this->data[2][2] * this->data[3][3] - this->data[3][2] * this->data[2][3];
+			T A1323 = this->data[1][2] * this->data[3][3] - this->data[3][2] * this->data[1][3];
+			T A1223 = this->data[1][2] * this->data[2][3] - this->data[2][2] * this->data[1][3];
+			T A0323 = this->data[0][2] * this->data[3][3] - this->data[3][2] * this->data[0][3];
+			T A0223 = this->data[0][2] * this->data[2][3] - this->data[2][2] * this->data[0][3];
+			T A0123 = this->data[0][2] * this->data[1][3] - this->data[1][2] * this->data[0][3];
+			T A2313 = this->data[2][1] * this->data[3][3] - this->data[3][1] * this->data[2][3];
+			T A1313 = this->data[1][1] * this->data[3][3] - this->data[3][1] * this->data[1][3];
+			T A1213 = this->data[1][1] * this->data[2][3] - this->data[2][1] * this->data[1][3];
+			T A2312 = this->data[2][1] * this->data[3][2] - this->data[3][1] * this->data[2][2];
+			T A1312 = this->data[1][1] * this->data[3][2] - this->data[3][1] * this->data[1][2];
+			T A1212 = this->data[1][1] * this->data[2][2] - this->data[2][1] * this->data[1][2];
+			T A0313 = this->data[0][1] * this->data[3][3] - this->data[3][1] * this->data[0][3];
+			T A0213 = this->data[0][1] * this->data[2][3] - this->data[2][1] * this->data[0][3];
+			T A0312 = this->data[0][1] * this->data[3][2] - this->data[3][1] * this->data[0][2];
+			T A0212 = this->data[0][1] * this->data[2][2] - this->data[2][1] * this->data[0][2];
+			T A0113 = this->data[0][1] * this->data[1][3] - this->data[1][1] * this->data[0][3];
+			T A0112 = this->data[0][1] * this->data[1][2] - this->data[1][1] * this->data[0][2];
 			
-			T det =   data[0][0] * (data[1][1] * A2323 - data[1][2] * A1323 + data[1][3] * A1223)
-					- data[0][1] * (data[1][0] * A2323 - data[1][2] * A0323 + data[1][3] * A0223)
-					+ data[0][2] * (data[1][0] * A1323 - data[1][1] * A0323 + data[1][3] * A0123)
-					- data[0][3] * (data[1][0] * A1223 - data[1][1] * A0223 + data[1][2] * A0123);
+			T det = + data[0][0] * (data[1][1] * A2323 - data[2][1] * A1323 + data[3][1] * A1223)
+					- data[1][0] * (data[0][1] * A2323 - data[2][1] * A0323 + data[3][1] * A0223)
+					+ data[2][0] * (data[0][1] * A1323 - data[1][1] * A0323 + data[3][1] * A0123)
+					- data[3][0] * (data[0][1] * A1223 - data[1][1] * A0223 + data[2][1] * A0123);
 			det = static_cast<T>(1) / det;
 			
 			*this = mat4x4<T>{
-					det *   (data[1][1] * A2323 - data[1][2] * A1323 + data[1][3] * A1223),
-					det * - (data[0][1] * A2323 - data[0][2] * A1323 + data[0][3] * A1223),
-					det *   (data[0][1] * A2313 - data[0][2] * A1313 + data[0][3] * A1213),
-					det * - (data[0][1] * A2312 - data[0][2] * A1312 + data[0][3] * A1212),
-					det * - (data[1][0] * A2323 - data[1][2] * A0323 + data[1][3] * A0223),
-					det *   (data[0][0] * A2323 - data[0][2] * A0323 + data[0][3] * A0223),
-					det * - (data[0][0] * A2313 - data[0][2] * A0313 + data[0][3] * A0213),
-					det *   (data[0][0] * A2312 - data[0][2] * A0312 + data[0][3] * A0212),
-					det *   (data[1][0] * A1323 - data[1][1] * A0323 + data[1][3] * A0123),
-					det * - (data[0][0] * A1323 - data[0][1] * A0323 + data[0][3] * A0123),
-					det *   (data[0][0] * A1313 - data[0][1] * A0313 + data[0][3] * A0113),
-					det * - (data[0][0] * A1312 - data[0][1] * A0312 + data[0][3] * A0112),
-					det * - (data[1][0] * A1223 - data[1][1] * A0223 + data[1][2] * A0123),
-					det *   (data[0][0] * A1223 - data[0][1] * A0223 + data[0][2] * A0123),
-					det * - (data[0][0] * A1213 - data[0][1] * A0213 + data[0][2] * A0113),
-					det *   (data[0][0] * A1212 - data[0][1] * A0212 + data[0][2] * A0112),
+					det *   (data[1][1] * A2323 - data[2][1] * A1323 + data[3][1] * A1223),
+					det * - (data[1][0] * A2323 - data[2][0] * A1323 + data[3][0] * A1223),
+					det *   (data[1][0] * A2313 - data[2][0] * A1313 + data[3][0] * A1213),
+					det * - (data[1][0] * A2312 - data[2][0] * A1312 + data[3][0] * A1212),
+					det * - (data[0][1] * A2323 - data[2][1] * A0323 + data[3][1] * A0223),
+					det *   (data[0][0] * A2323 - data[2][0] * A0323 + data[3][0] * A0223),
+					det * - (data[0][0] * A2313 - data[2][0] * A0313 + data[3][0] * A0213),
+					det *   (data[0][0] * A2312 - data[2][0] * A0312 + data[3][0] * A0212),
+					det *   (data[0][1] * A1323 - data[1][1] * A0323 + data[3][1] * A0123),
+					det * - (data[0][0] * A1323 - data[1][0] * A0323 + data[3][0] * A0123),
+					det *   (data[0][0] * A1313 - data[1][0] * A0313 + data[3][0] * A0113),
+					det * - (data[0][0] * A1312 - data[1][0] * A0312 + data[3][0] * A0112),
+					det * - (data[0][1] * A1223 - data[1][1] * A0223 + data[2][1] * A0123),
+					det *   (data[0][0] * A1223 - data[1][0] * A0223 + data[2][0] * A0123),
+					det * - (data[0][0] * A1213 - data[1][0] * A0213 + data[2][0] * A0113),
+					det *   (data[0][0] * A1212 - data[1][0] * A0212 + data[2][0] * A0112),
 				};
 		}
 		
+		//row-column reversed
 		/// Get a new inverted mat4x4 from this one
 		inline mat4x4<T> inverse() const
 		{
-			T A2323 = this->data[2][2] * this->data[3][3] - this->data[2][3] * this->data[3][2];
-			T A1323 = this->data[2][1] * this->data[3][3] - this->data[2][3] * this->data[3][1];
-			T A1223 = this->data[2][1] * this->data[3][2] - this->data[2][2] * this->data[3][1];
-			T A0323 = this->data[2][0] * this->data[3][3] - this->data[2][3] * this->data[3][0];
-			T A0223 = this->data[2][0] * this->data[3][2] - this->data[2][2] * this->data[3][0];
-			T A0123 = this->data[2][0] * this->data[3][1] - this->data[2][1] * this->data[3][0];
-			T A2313 = this->data[1][2] * this->data[3][3] - this->data[1][3] * this->data[3][2];
-			T A1313 = this->data[1][1] * this->data[3][3] - this->data[1][3] * this->data[3][1];
-			T A1213 = this->data[1][1] * this->data[3][2] - this->data[1][2] * this->data[3][1];
-			T A2312 = this->data[1][2] * this->data[2][3] - this->data[1][3] * this->data[2][2];
-			T A1312 = this->data[1][1] * this->data[2][3] - this->data[1][3] * this->data[2][1];
-			T A1212 = this->data[1][1] * this->data[2][2] - this->data[1][2] * this->data[2][1];
-			T A0313 = this->data[1][0] * this->data[3][3] - this->data[1][3] * this->data[3][0];
-			T A0213 = this->data[1][0] * this->data[3][2] - this->data[1][2] * this->data[3][0];
-			T A0312 = this->data[1][0] * this->data[2][3] - this->data[1][3] * this->data[2][0];
-			T A0212 = this->data[1][0] * this->data[2][2] - this->data[1][2] * this->data[2][0];
-			T A0113 = this->data[1][0] * this->data[3][1] - this->data[1][1] * this->data[3][0];
-			T A0112 = this->data[1][0] * this->data[2][1] - this->data[1][1] * this->data[2][0];
+			T A2323 = this->data[2][2] * this->data[3][3] - this->data[3][2] * this->data[2][3];
+			T A1323 = this->data[1][2] * this->data[3][3] - this->data[3][2] * this->data[1][3];
+			T A1223 = this->data[1][2] * this->data[2][3] - this->data[2][2] * this->data[1][3];
+			T A0323 = this->data[0][2] * this->data[3][3] - this->data[3][2] * this->data[0][3];
+			T A0223 = this->data[0][2] * this->data[2][3] - this->data[2][2] * this->data[0][3];
+			T A0123 = this->data[0][2] * this->data[1][3] - this->data[1][2] * this->data[0][3];
+			T A2313 = this->data[2][1] * this->data[3][3] - this->data[3][1] * this->data[2][3];
+			T A1313 = this->data[1][1] * this->data[3][3] - this->data[3][1] * this->data[1][3];
+			T A1213 = this->data[1][1] * this->data[2][3] - this->data[2][1] * this->data[1][3];
+			T A2312 = this->data[2][1] * this->data[3][2] - this->data[3][1] * this->data[2][2];
+			T A1312 = this->data[1][1] * this->data[3][2] - this->data[3][1] * this->data[1][2];
+			T A1212 = this->data[1][1] * this->data[2][2] - this->data[2][1] * this->data[1][2];
+			T A0313 = this->data[0][1] * this->data[3][3] - this->data[3][1] * this->data[0][3];
+			T A0213 = this->data[0][1] * this->data[2][3] - this->data[2][1] * this->data[0][3];
+			T A0312 = this->data[0][1] * this->data[3][2] - this->data[3][1] * this->data[0][2];
+			T A0212 = this->data[0][1] * this->data[2][2] - this->data[2][1] * this->data[0][2];
+			T A0113 = this->data[0][1] * this->data[1][3] - this->data[1][1] * this->data[0][3];
+			T A0112 = this->data[0][1] * this->data[1][2] - this->data[1][1] * this->data[0][2];
 			
-			T det =   data[0][0] * (data[1][1] * A2323 - data[1][2] * A1323 + data[1][3] * A1223)
-					- data[0][1] * (data[1][0] * A2323 - data[1][2] * A0323 + data[1][3] * A0223)
-					+ data[0][2] * (data[1][0] * A1323 - data[1][1] * A0323 + data[1][3] * A0123)
-					- data[0][3] * (data[1][0] * A1223 - data[1][1] * A0223 + data[1][2] * A0123);
+			T det = + data[0][0] * (data[1][1] * A2323 - data[2][1] * A1323 + data[3][1] * A1223)
+			        - data[1][0] * (data[0][1] * A2323 - data[2][1] * A0323 + data[3][1] * A0223)
+			        + data[2][0] * (data[0][1] * A1323 - data[1][1] * A0323 + data[3][1] * A0123)
+			        - data[3][0] * (data[0][1] * A1223 - data[1][1] * A0223 + data[2][1] * A0123);
 			det = static_cast<T>(1) / det;
 			
 			return mat4x4<T>{
-					det *   (data[1][1] * A2323 - data[1][2] * A1323 + data[1][3] * A1223),
-					det * - (data[0][1] * A2323 - data[0][2] * A1323 + data[0][3] * A1223),
-					det *   (data[0][1] * A2313 - data[0][2] * A1313 + data[0][3] * A1213),
-					det * - (data[0][1] * A2312 - data[0][2] * A1312 + data[0][3] * A1212),
-					det * - (data[1][0] * A2323 - data[1][2] * A0323 + data[1][3] * A0223),
-					det *   (data[0][0] * A2323 - data[0][2] * A0323 + data[0][3] * A0223),
-					det * - (data[0][0] * A2313 - data[0][2] * A0313 + data[0][3] * A0213),
-					det *   (data[0][0] * A2312 - data[0][2] * A0312 + data[0][3] * A0212),
-					det *   (data[1][0] * A1323 - data[1][1] * A0323 + data[1][3] * A0123),
-					det * - (data[0][0] * A1323 - data[0][1] * A0323 + data[0][3] * A0123),
-					det *   (data[0][0] * A1313 - data[0][1] * A0313 + data[0][3] * A0113),
-					det * - (data[0][0] * A1312 - data[0][1] * A0312 + data[0][3] * A0112),
-					det * - (data[1][0] * A1223 - data[1][1] * A0223 + data[1][2] * A0123),
-					det *   (data[0][0] * A1223 - data[0][1] * A0223 + data[0][2] * A0123),
-					det * - (data[0][0] * A1213 - data[0][1] * A0213 + data[0][2] * A0113),
-					det *   (data[0][0] * A1212 - data[0][1] * A0212 + data[0][2] * A0112),
+					det *   (data[1][1] * A2323 - data[2][1] * A1323 + data[3][1] * A1223),
+					det * - (data[1][0] * A2323 - data[2][0] * A1323 + data[3][0] * A1223),
+					det *   (data[1][0] * A2313 - data[2][0] * A1313 + data[3][0] * A1213),
+					det * - (data[1][0] * A2312 - data[2][0] * A1312 + data[3][0] * A1212),
+					det * - (data[0][1] * A2323 - data[2][1] * A0323 + data[3][1] * A0223),
+					det *   (data[0][0] * A2323 - data[2][0] * A0323 + data[3][0] * A0223),
+					det * - (data[0][0] * A2313 - data[2][0] * A0313 + data[3][0] * A0213),
+					det *   (data[0][0] * A2312 - data[2][0] * A0312 + data[3][0] * A0212),
+					det *   (data[0][1] * A1323 - data[1][1] * A0323 + data[3][1] * A0123),
+					det * - (data[0][0] * A1323 - data[1][0] * A0323 + data[3][0] * A0123),
+					det *   (data[0][0] * A1313 - data[1][0] * A0313 + data[3][0] * A0113),
+					det * - (data[0][0] * A1312 - data[1][0] * A0312 + data[3][0] * A0112),
+					det * - (data[0][1] * A1223 - data[1][1] * A0223 + data[2][1] * A0123),
+					det *   (data[0][0] * A1223 - data[1][0] * A0223 + data[2][0] * A0123),
+					det * - (data[0][0] * A1213 - data[1][0] * A0213 + data[2][0] * A0113),
+					det *   (data[0][0] * A1212 - data[1][0] * A0212 + data[2][0] * A0112),
 			};
 		}
-		
-		/*inline void invert()
-		{
-			this->data[0][0] = this->data[1][2] * this->data[2][3] * this->data[3][1] - this->data[1][3] * this->data[2][2] * this->data[3][1] + this->data[1][3] * this->data[2][1] * this->data[3][2] - this->data[1][1] * this->data[2][3] * this->data[3][2] - this->data[1][2] * this->data[2][1] * this->data[3][3] + this->data[1][1] * this->data[2][2] * this->data[3][3];
-			this->data[0][1] = this->data[0][3] * this->data[2][2] * this->data[3][1] - this->data[0][2] * this->data[2][3] * this->data[3][1] - this->data[0][3] * this->data[2][1] * this->data[3][2] + this->data[0][1] * this->data[2][3] * this->data[3][2] + this->data[0][2] * this->data[2][1] * this->data[3][3] - this->data[0][1] * this->data[2][2] * this->data[3][3];
-			this->data[0][2] = this->data[0][2] * this->data[1][3] * this->data[3][1] - this->data[0][3] * this->data[1][2] * this->data[3][1] + this->data[0][3] * this->data[1][1] * this->data[3][2] - this->data[0][1] * this->data[1][3] * this->data[3][2] - this->data[0][2] * this->data[1][1] * this->data[3][3] + this->data[0][1] * this->data[1][2] * this->data[3][3];
-			this->data[0][3] = this->data[0][3] * this->data[1][2] * this->data[2][1] - this->data[0][2] * this->data[1][3] * this->data[2][1] - this->data[0][3] * this->data[1][1] * this->data[2][2] + this->data[0][1] * this->data[1][3] * this->data[2][2] + this->data[0][2] * this->data[1][1] * this->data[2][3] - this->data[0][1] * this->data[1][2] * this->data[2][3];
-			this->data[1][0] = this->data[1][3] * this->data[2][2] * this->data[3][0] - this->data[1][2] * this->data[2][3] * this->data[3][0] - this->data[1][3] * this->data[2][0] * this->data[3][2] + this->data[1][0] * this->data[2][3] * this->data[3][2] + this->data[1][2] * this->data[2][0] * this->data[3][3] - this->data[1][0] * this->data[2][2] * this->data[3][3];
-			this->data[1][1] = this->data[0][2] * this->data[2][3] * this->data[3][0] - this->data[0][3] * this->data[2][2] * this->data[3][0] + this->data[0][3] * this->data[2][0] * this->data[3][2] - this->data[0][0] * this->data[2][3] * this->data[3][2] - this->data[0][2] * this->data[2][0] * this->data[3][3] + this->data[0][0] * this->data[2][2] * this->data[3][3];
-			this->data[1][2] = this->data[0][3] * this->data[1][2] * this->data[3][0] - this->data[0][2] * this->data[1][3] * this->data[3][0] - this->data[0][3] * this->data[1][0] * this->data[3][2] + this->data[0][0] * this->data[1][3] * this->data[3][2] + this->data[0][2] * this->data[1][0] * this->data[3][3] - this->data[0][0] * this->data[1][2] * this->data[3][3];
-			this->data[1][3] = this->data[0][2] * this->data[1][3] * this->data[2][0] - this->data[0][3] * this->data[1][2] * this->data[2][0] + this->data[0][3] * this->data[1][0] * this->data[2][2] - this->data[0][0] * this->data[1][3] * this->data[2][2] - this->data[0][2] * this->data[1][0] * this->data[2][3] + this->data[0][0] * this->data[1][2] * this->data[2][3];
-			this->data[2][0] = this->data[1][1] * this->data[2][3] * this->data[3][0] - this->data[1][3] * this->data[2][1] * this->data[3][0] + this->data[1][3] * this->data[2][0] * this->data[3][1] - this->data[1][0] * this->data[2][3] * this->data[3][1] - this->data[1][1] * this->data[2][0] * this->data[3][3] + this->data[1][0] * this->data[2][1] * this->data[3][3];
-			this->data[2][1] = this->data[0][3] * this->data[2][1] * this->data[3][0] - this->data[0][1] * this->data[2][3] * this->data[3][0] - this->data[0][3] * this->data[2][0] * this->data[3][1] + this->data[0][0] * this->data[2][3] * this->data[3][1] + this->data[0][1] * this->data[2][0] * this->data[3][3] - this->data[0][0] * this->data[2][1] * this->data[3][3];
-			this->data[2][2] = this->data[0][1] * this->data[1][3] * this->data[3][0] - this->data[0][3] * this->data[1][1] * this->data[3][0] + this->data[0][3] * this->data[1][0] * this->data[3][1] - this->data[0][0] * this->data[1][3] * this->data[3][1] - this->data[0][1] * this->data[1][0] * this->data[3][3] + this->data[0][0] * this->data[1][1] * this->data[3][3];
-			this->data[2][3] = this->data[0][3] * this->data[1][1] * this->data[2][0] - this->data[0][1] * this->data[1][3] * this->data[2][0] - this->data[0][3] * this->data[1][0] * this->data[2][1] + this->data[0][0] * this->data[1][3] * this->data[2][1] + this->data[0][1] * this->data[1][0] * this->data[2][3] - this->data[0][0] * this->data[1][1] * this->data[2][3];
-			this->data[3][0] = this->data[1][2] * this->data[2][1] * this->data[3][0] - this->data[1][1] * this->data[2][2] * this->data[3][0] - this->data[1][2] * this->data[2][0] * this->data[3][1] + this->data[1][0] * this->data[2][2] * this->data[3][1] + this->data[1][1] * this->data[2][0] * this->data[3][2] - this->data[1][0] * this->data[2][1] * this->data[3][2];
-			this->data[3][1] = this->data[0][1] * this->data[2][2] * this->data[3][0] - this->data[0][2] * this->data[2][1] * this->data[3][0] + this->data[0][2] * this->data[2][0] * this->data[3][1] - this->data[0][0] * this->data[2][2] * this->data[3][1] - this->data[0][1] * this->data[2][0] * this->data[3][2] + this->data[0][0] * this->data[2][1] * this->data[3][2];
-			this->data[3][2] = this->data[0][2] * this->data[1][1] * this->data[3][0] - this->data[0][1] * this->data[1][2] * this->data[3][0] - this->data[0][2] * this->data[1][0] * this->data[3][1] + this->data[0][0] * this->data[1][2] * this->data[3][1] + this->data[0][1] * this->data[1][0] * this->data[3][2] - this->data[0][0] * this->data[1][1] * this->data[3][2];
-			this->data[3][3] = this->data[0][1] * this->data[1][2] * this->data[2][0] - this->data[0][2] * this->data[1][1] * this->data[2][0] + this->data[0][2] * this->data[1][0] * this->data[2][1] - this->data[0][0] * this->data[1][2] * this->data[2][1] - this->data[0][1] * this->data[1][0] * this->data[2][2] + this->data[0][0] * this->data[1][1] * this->data[2][2];
-			*this = *this * scaleMat(vec3<T>{1 / this->determinant()});
-		}
-		
-		inline mat4x4<T> inverse() const
-		{
-			mat4x4<T> out;
-			out[0][0] = this->data[1][2] * this->data[2][3] * this->data[3][1] - this->data[1][3] * this->data[2][2] * this->data[3][1] + this->data[1][3] * this->data[2][1] * this->data[3][2] - this->data[1][1] * this->data[2][3] * this->data[3][2] - this->data[1][2] * this->data[2][1] * this->data[3][3] + this->data[1][1] * this->data[2][2] * this->data[3][3];
-			out[0][1] = this->data[0][3] * this->data[2][2] * this->data[3][1] - this->data[0][2] * this->data[2][3] * this->data[3][1] - this->data[0][3] * this->data[2][1] * this->data[3][2] + this->data[0][1] * this->data[2][3] * this->data[3][2] + this->data[0][2] * this->data[2][1] * this->data[3][3] - this->data[0][1] * this->data[2][2] * this->data[3][3];
-			out[0][2] = this->data[0][2] * this->data[1][3] * this->data[3][1] - this->data[0][3] * this->data[1][2] * this->data[3][1] + this->data[0][3] * this->data[1][1] * this->data[3][2] - this->data[0][1] * this->data[1][3] * this->data[3][2] - this->data[0][2] * this->data[1][1] * this->data[3][3] + this->data[0][1] * this->data[1][2] * this->data[3][3];
-			out[0][3] = this->data[0][3] * this->data[1][2] * this->data[2][1] - this->data[0][2] * this->data[1][3] * this->data[2][1] - this->data[0][3] * this->data[1][1] * this->data[2][2] + this->data[0][1] * this->data[1][3] * this->data[2][2] + this->data[0][2] * this->data[1][1] * this->data[2][3] - this->data[0][1] * this->data[1][2] * this->data[2][3];
-			out[1][0] = this->data[1][3] * this->data[2][2] * this->data[3][0] - this->data[1][2] * this->data[2][3] * this->data[3][0] - this->data[1][3] * this->data[2][0] * this->data[3][2] + this->data[1][0] * this->data[2][3] * this->data[3][2] + this->data[1][2] * this->data[2][0] * this->data[3][3] - this->data[1][0] * this->data[2][2] * this->data[3][3];
-			out[1][1] = this->data[0][2] * this->data[2][3] * this->data[3][0] - this->data[0][3] * this->data[2][2] * this->data[3][0] + this->data[0][3] * this->data[2][0] * this->data[3][2] - this->data[0][0] * this->data[2][3] * this->data[3][2] - this->data[0][2] * this->data[2][0] * this->data[3][3] + this->data[0][0] * this->data[2][2] * this->data[3][3];
-			out[1][2] = this->data[0][3] * this->data[1][2] * this->data[3][0] - this->data[0][2] * this->data[1][3] * this->data[3][0] - this->data[0][3] * this->data[1][0] * this->data[3][2] + this->data[0][0] * this->data[1][3] * this->data[3][2] + this->data[0][2] * this->data[1][0] * this->data[3][3] - this->data[0][0] * this->data[1][2] * this->data[3][3];
-			out[1][3] = this->data[0][2] * this->data[1][3] * this->data[2][0] - this->data[0][3] * this->data[1][2] * this->data[2][0] + this->data[0][3] * this->data[1][0] * this->data[2][2] - this->data[0][0] * this->data[1][3] * this->data[2][2] - this->data[0][2] * this->data[1][0] * this->data[2][3] + this->data[0][0] * this->data[1][2] * this->data[2][3];
-			out[2][0] = this->data[1][1] * this->data[2][3] * this->data[3][0] - this->data[1][3] * this->data[2][1] * this->data[3][0] + this->data[1][3] * this->data[2][0] * this->data[3][1] - this->data[1][0] * this->data[2][3] * this->data[3][1] - this->data[1][1] * this->data[2][0] * this->data[3][3] + this->data[1][0] * this->data[2][1] * this->data[3][3];
-			out[2][1] = this->data[0][3] * this->data[2][1] * this->data[3][0] - this->data[0][1] * this->data[2][3] * this->data[3][0] - this->data[0][3] * this->data[2][0] * this->data[3][1] + this->data[0][0] * this->data[2][3] * this->data[3][1] + this->data[0][1] * this->data[2][0] * this->data[3][3] - this->data[0][0] * this->data[2][1] * this->data[3][3];
-			out[2][2] = this->data[0][1] * this->data[1][3] * this->data[3][0] - this->data[0][3] * this->data[1][1] * this->data[3][0] + this->data[0][3] * this->data[1][0] * this->data[3][1] - this->data[0][0] * this->data[1][3] * this->data[3][1] - this->data[0][1] * this->data[1][0] * this->data[3][3] + this->data[0][0] * this->data[1][1] * this->data[3][3];
-			out[2][3] = this->data[0][3] * this->data[1][1] * this->data[2][0] - this->data[0][1] * this->data[1][3] * this->data[2][0] - this->data[0][3] * this->data[1][0] * this->data[2][1] + this->data[0][0] * this->data[1][3] * this->data[2][1] + this->data[0][1] * this->data[1][0] * this->data[2][3] - this->data[0][0] * this->data[1][1] * this->data[2][3];
-			out[3][0] = this->data[1][2] * this->data[2][1] * this->data[3][0] - this->data[1][1] * this->data[2][2] * this->data[3][0] - this->data[1][2] * this->data[2][0] * this->data[3][1] + this->data[1][0] * this->data[2][2] * this->data[3][1] + this->data[1][1] * this->data[2][0] * this->data[3][2] - this->data[1][0] * this->data[2][1] * this->data[3][2];
-			out[3][1] = this->data[0][1] * this->data[2][2] * this->data[3][0] - this->data[0][2] * this->data[2][1] * this->data[3][0] + this->data[0][2] * this->data[2][0] * this->data[3][1] - this->data[0][0] * this->data[2][2] * this->data[3][1] - this->data[0][1] * this->data[2][0] * this->data[3][2] + this->data[0][0] * this->data[2][1] * this->data[3][2];
-			out[3][2] = this->data[0][2] * this->data[1][1] * this->data[3][0] - this->data[0][1] * this->data[1][2] * this->data[3][0] - this->data[0][2] * this->data[1][0] * this->data[3][1] + this->data[0][0] * this->data[1][2] * this->data[3][1] + this->data[0][1] * this->data[1][0] * this->data[3][2] - this->data[0][0] * this->data[1][1] * this->data[3][2];
-			out[3][3] = this->data[0][1] * this->data[1][2] * this->data[2][0] - this->data[0][2] * this->data[1][1] * this->data[2][0] + this->data[0][2] * this->data[1][0] * this->data[2][1] - this->data[0][0] * this->data[1][2] * this->data[2][1] - this->data[0][1] * this->data[1][0] * this->data[2][2] + this->data[0][0] * this->data[1][1] * this->data[2][2];
-			out = out * scaleMat(vec3<T>{1 / out.determinant()});
-			return out;
-		}*/
 		
 		/// Transpose this 4x4 matrix
 		inline mat4x4<T> transpose() const
@@ -365,68 +300,6 @@ namespace Iris
 			out[3][2] = this->data[2][3];
 			out[3][3] = this->data[3][3];
 			return out;
-		}
-		
-		inline static mat4x4<T> modelMatrix(vec3<T> const &position, quat<T> const &rotation, vec3<T> const &scale)
-		{
-			mat4x4<T> t = translateMat(position);
-			mat4x4<T> r = rotateMat(rotation);
-			mat4x4<T> s = scaleMat(scale);
-			return s * r * t;
-		}
-		
-		inline static mat4x4<T> modelMatrixText(vec3<T> const &position, quat<T> const &rotation, vec3<T> const &scale)
-		{
-			mat4x4<T> t = translateMat(position);
-			mat4x4<T> r = rotateMat(rotation);
-			mat4x4<T> s = scaleMat(scale);
-			return s * t * r;
-		}
-		
-		inline static mat4x4<T> modelMatrix(vec3<T> const &position, vec3<T> const &origin, quat<T> const &rotation, vec3<T> const &scale)
-		{
-			mat4x4<T> tOffset = translateMat(origin);
-			mat4x4<T> r = rotateMat(rotation);
-			mat4x4<T> t = translateMat(position);
-			mat4x4<T> s = scaleMat(scale);
-			return s * tOffset * r * t;
-		}
-		
-		inline static mat4x4<T> viewMatrix(quat<T> const &cameraRotation, vec3<T> const &cameraPosition)
-		{
-			mat4x4<T> rot = mat4x4<T>{cameraRotation.inverse()};
-			mat4x4<T> trans = translateMat(cameraPosition.inverse());
-			return trans * rot;
-		}
-		
-		inline static mat4x4<T> perspectiveProjectionMatrix(T fov, T nearPlane, T farPlane, uint32_t width, uint32_t height)
-		{
-			T halfFOV = static_cast<T>(1) / std::tan(static_cast<T>(0.5) * degToRad(fov));
-			mat4x4<T> out{};
-			out[0][0] = halfFOV * (static_cast<T>(height) / static_cast<T>(width));
-			out[1][1] = halfFOV;
-			out[2][2] = (farPlane + nearPlane) / (farPlane - nearPlane);
-			out[2][3] = static_cast<T>(1);
-			out[3][2] = -(static_cast<T>(2) * farPlane * nearPlane) / (farPlane - nearPlane);
-			out[3][3] = 0;
-			return out;
-		}
-		
-		inline static mat4x4<T> orthoProjectionMatrix(T left, T right, T top, T bottom, T zNear, T zFar)
-		{
-			mat4x4<T> out{};
-			out[0][0] = static_cast<T>(2) / (right - left);
-			out[1][1] = static_cast<T>(2) / (top - bottom);
-			out[2][2] = -static_cast<T>(2) / (zFar - zNear);
-			out[3][0] = -(right + left) / (right - left);
-			out[3][1] = -(top + bottom) / (top - bottom);
-			out[3][2] = -(zFar + zNear) / (zFar - zNear);
-			return out;
-		}
-		
-		inline static mat4x4<T> modelViewProjectionMatrix(mat4x4<T> const &model, mat4x4<T> const &view, mat4x4<T> const &projection)
-		{
-			return model * view * projection;
 		}
 		
 		using value_type = T;
@@ -476,5 +349,100 @@ namespace Iris
 			printf("%s: %s\n", name.data(), this->toString().data());
 		}
 	};
+	
+	template <typename T> inline mat4x4<T> translateMat(vec3<T> const &in)
+	{
+		mat4x4<T> out{};
+		out[3][0] = in[0];
+		out[3][1] = in[1];
+		out[3][2] = in[2];
+		return out;
+	}
+	
+	template <typename T> inline mat4x4<T> rotateMat(quat<T> const &in)
+	{
+		return mat4x4<T>{in};
+	}
+	
+	/// Convert a vec3 scale into a mat4x4 representation
+	template <typename T> inline mat4x4<T> scaleMat(vec3<T> const &scale)
+	{
+		mat4x4<T> out{};
+		out[0][0] = scale[0];
+		out[1][1] = scale[1];
+		out[2][2] = scale[2];
+		return out;
+	}
+	
+	template <typename T> inline mat4x4<T> scaleMat(T scalar)
+	{
+		mat4x4<T> out;
+		out[0][0] = scalar;
+		out[1][1] = scalar;
+		out[2][2] = scalar;
+		return out;
+	}
+	
+	template <typename T> inline mat4x4<T> modelMatrix(vec3<T> const &position, quat<T> const &rotation, vec3<T> const &scale)
+	{
+		mat4x4<T> t = translateMat(position);
+		mat4x4<T> r = rotateMat(rotation);
+		mat4x4<T> s = scaleMat(scale);
+		return s * r * t;
+	}
+	
+	template <typename T> inline mat4x4<T> modelMatrixText(vec3<T> const &position, quat<T> const &rotation, vec3<T> const &scale)
+	{
+		mat4x4<T> t = translateMat(position);
+		mat4x4<T> r = rotateMat(rotation);
+		mat4x4<T> s = scaleMat(scale);
+		return s * t * r;
+	}
+	
+	template <typename T> inline mat4x4<T> modelMatrix(vec3<T> const &position, vec3<T> const &origin, quat<T> const &rotation, vec3<T> const &scale)
+	{
+		mat4x4<T> tOffset = translateMat(origin);
+		mat4x4<T> r = rotateMat(rotation);
+		mat4x4<T> t = translateMat(position);
+		mat4x4<T> s = scaleMat(scale);
+		return s * tOffset * r * t;
+	}
+	
+	template <typename T> inline mat4x4<T> viewMatrix(quat<T> const &cameraRotation, vec3<T> const &cameraPosition)
+	{
+		mat4x4<T> rot = mat4x4<T>{cameraRotation.inverse()};
+		mat4x4<T> trans = translateMat(cameraPosition.inverse());
+		return trans * rot;
+	}
+	
+	template <typename T> inline mat4x4<T> perspectiveProjectionMatrix(T fov, T nearPlane, T farPlane, uint32_t width, uint32_t height)
+	{
+		T halfFOV = static_cast<T>(1) / std::tan(static_cast<T>(0.5) * degToRad(fov));
+		mat4x4<T> out{};
+		out[0][0] = halfFOV * (static_cast<T>(height) / static_cast<T>(width));
+		out[1][1] = halfFOV;
+		out[2][2] = (farPlane + nearPlane) / (farPlane - nearPlane);
+		out[2][3] = static_cast<T>(1);
+		out[3][2] = -(static_cast<T>(2) * farPlane * nearPlane) / (farPlane - nearPlane);
+		out[3][3] = 0;
+		return out;
+	}
+	
+	template <typename T> inline mat4x4<T> orthoProjectionMatrix(T left, T right, T top, T bottom, T zNear, T zFar)
+	{
+		mat4x4<T> out{};
+		out[0][0] = static_cast<T>(2) / (right - left);
+		out[1][1] = static_cast<T>(2) / (top - bottom);
+		out[2][2] = -static_cast<T>(2) / (zFar - zNear);
+		out[3][0] = -(right + left) / (right - left);
+		out[3][1] = -(top + bottom) / (top - bottom);
+		out[3][2] = -(zFar + zNear) / (zFar - zNear);
+		return out;
+	}
+	
+	template <typename T> inline mat4x4<T> modelViewProjectionMatrix(mat4x4<T> const &model, mat4x4<T> const &view, mat4x4<T> const &projection)
+	{
+		return model * view * projection;
+	}
 }
 namespace IR = Iris;

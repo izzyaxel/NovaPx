@@ -31,5 +31,5 @@ protected:
 	void wheelEvent(QWheelEvent *event) override;
 
 private:
-	IR::mat4x4<float> m, v, p, mvp, invVP;
+	IR::mat4x4<float> m, v, p, mvp;
 };

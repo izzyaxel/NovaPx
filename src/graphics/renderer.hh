@@ -5,7 +5,6 @@
 #include "color.hh"
 #include "fbo.hh"
 #include "image.hh"
-#include "camera.hh"
 
 #include <iris/vec2.hh>
 #include <cstdint>

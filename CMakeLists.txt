@@ -40,7 +40,6 @@ set(SRC
 		src/assets/shaders.hh
 		src/assets/meshes.hh
 		
-		src/graphics/camera.hh
 		src/graphics/color.cc src/graphics/color.hh
 		src/graphics/fbo.cc src/graphics/fbo.hh
 		src/graphics/filter.hh
@@ -49,20 +48,25 @@ set(SRC
 		src/graphics/png.cc src/graphics/png.hh
 		src/graphics/shader.cc src/graphics/shader.hh
 		src/graphics/texture.cc src/graphics/texture.hh
-		src/widgets/glWidget.cc src/widgets/glWidget.hh
 		
 		src/util/globals.hh src/util/globals.cc
-		
 		src/util/io.cc src/util/io.hh
-		
+		src/util/tools.hh
 		src/util/def.hh
 		src/util/event.hh
 		src/util/threadPool.cc src/util/threadPool.hh
 		src/util/util.cc src/util/util.hh
-		src/widgets/mainWindowWidget.cc src/widgets/mainWindowWidget.hh)
+		src/util/instances.cc src/util/instances.hh
+		
+		src/widgets/glWidget.cc src/widgets/glWidget.hh
+		src/widgets/mainWindowWidget.cc src/widgets/mainWindowWidget.hh
+		src/widgets/pickColorButton.cc src/widgets/pickColorButton.hh
+		src/widgets/brushToolButton.cc src/widgets/brushToolButton.hh
+		src/widgets/eraserToolButton.cc src/widgets/eraserToolButton.hh
+		src/widgets/eyedropperToolButton.cc src/widgets/eyedropperToolButton.hh)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static -static-libgcc -static-libstdc++")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static -static-libgcc -static-libstdc++") #TODO this isn't working under MSYS2
 project(PixelCreator)
 include_directories(include)
 set(CMAKE_AUTOMOC ON)
