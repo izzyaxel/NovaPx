@@ -1,5 +1,6 @@
 #include "instances.hh"
 #include "globals.hh"
+#include "util.hh"
 
 QVBoxLayout *mainLayout = nullptr, *leftBarLayout = nullptr;
 QSplitter *vSplitter = nullptr, *hSplitter = nullptr;

@@ -241,8 +241,8 @@ void GLWidget::keyReleaseEvent(QKeyEvent *event)
 void GLWidget::screenshot(std::string const &folderPath, uint32_t width, uint32_t height)
 {
 	std::vector<unsigned char> pixels;
-	pixels.resize(width * height * 3); //Preallocate
+	pixels.resize(width * height * 3);
 	this->glPixelStorei(GL_PACK_ALIGNMENT, 1); //Ensure the pixel data we get from OGL is in the right format
-	this->glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels.data()); //Grab the pixels currently in the buffer and store them in the vector
-	threadPool.enqueue(screenshotIOThread, folderPath, width, height, pixels); //I/O will cause a hiccup in the framerate if we don't spin it off into a new async thread 
+	this->glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels.data()); //Grab the pixels currently in the buffer
+	threadPool.enqueue(screenshotIOThread, folderPath, width, height, pixels); //File I/O will cause a hiccup if we don't spin it into a new async thread 
 }
