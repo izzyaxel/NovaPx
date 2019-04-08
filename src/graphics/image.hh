@@ -12,12 +12,12 @@ struct Image
 	explicit Image(std::string const &filePath);
 	
 	/// Get the pixel at the given x, y position in the image, starting from the top-left, left to right, top to bottom
-	Color getPixel(uint32_t x, uint32_t y);
+	Color getPixel(int32_t x, int32_t y);
 	
-	void setPixel(uint32_t x, uint32_t y, Color &color);
+	void setPixel(int32_t x, int32_t y, Color &color);
 	
 	/// Get the index into the imageData array based on the x, y position of the pixel given
-	size_t index(uint32_t x, uint32_t y);
+	size_t index(int32_t x, int32_t y);
 	
 	bool needsRedraw();
 	
@@ -31,8 +31,12 @@ struct Image
 	
 	void addScale(IR::vec2<int32_t> const &scale);
 	
+	void floodFill(int32_t x, int32_t y, Color &oldColor, Color &newColor);
+	
 	/// Is image data present in this image
 	bool empty();
+	
+	void setMagLabel();
 	
 	uint32_t width = 0, height = 0;
 	char colorFormat = 'a', bitDepth = 'a';
@@ -41,5 +45,7 @@ struct Image
 	IR::vec2<int32_t> scale{1, 1};
 
 private:
+	bool isIndexValid(int32_t x, int32_t y);
+	
 	bool _needsRedraw = false, _unsavedChanges = true;
 };

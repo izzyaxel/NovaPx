@@ -11,6 +11,11 @@ Color Color::operator+(Color const &other)
 	return out;
 }
 
+bool Color::operator==(Color const &other)
+{
+	return this->r == other.r && this->g == other.g && this->b == other.b && this->a == other.a;
+}
+
 void Color::fromRGBf(float r, float g, float b)
 {
 	this->r = static_cast<iFmt>(bound<float>(r, 0.0f, 1.0f) * ui16Max);

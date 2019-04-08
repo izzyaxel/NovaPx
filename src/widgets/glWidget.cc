@@ -6,6 +6,7 @@
 #include "../assets/shaders.hh"
 #include "../assets/meshes.hh"
 #include "../util/threadPool.hh"
+#include "../util/instances.hh"
 #include "../graphics/texture.hh"
 
 #include <QtGui/QMouseEvent>
@@ -84,6 +85,7 @@ void GLWidget::initializeGL()
 	Assets::centeredQuadMesh = MU<Mesh>(centeredQuadVerts, 12, centeredQuadUVs, 8);
 	
 	canvas = MS<Image>(getCWD() + "test.png");
+	canvas->setScale({5});
 }
 
 void GLWidget::resizeGL(int w, int h)
@@ -99,7 +101,7 @@ void GLWidget::resizeGL(int w, int h)
 
 void GLWidget::paintGL()
 {
-	if(canvas)
+	if(canvas && canvas->needsRedraw())
 	{
 		this->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		this->v = IR::viewMatrix<float>(IR::quat<float>{}, IR::vec3<float>{Camera::pos, 0});
@@ -146,6 +148,17 @@ void modifyCanvas()
 			
 			case Tools::EYEDROPPER:
 				State::curColor = canvas->getPixel(pixelCoord.x(), pixelCoord.y());
+				{
+					auto c = State::curColor.asRGBui8();
+					pickColorButton->setColor(QColor(c.r(), c.g(), c.b()));
+				}
+				break;
+			
+			case Tools::FLOODFILL:
+				{
+					Color c = canvas->getPixel(pixelCoord.x(), pixelCoord.y());
+					canvas->floodFill(pixelCoord.x(), pixelCoord.y(), c, State::curColor);
+				}
 				break;
 			
 			default: break;
@@ -224,7 +237,6 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 
 void GLWidget::wheelEvent(QWheelEvent *event)
 {
-	canvas->scale += event->delta() > 0 ? 1 : -1;
 	canvas->addScale(IR::vec2<int32_t>{event->delta() > 0 ? 1 : -1});
 }
 

@@ -7,7 +7,7 @@ if(WIN32 OR WIN64)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static -std=c++17 -Wall -Wextra -Wpedantic -Wformat-security -Wno-unused")
 	if(CMAKE_BUILD_TYPE MATCHES Release)
 		set(ARCH "x86_64")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FORTIFY_SOURCE=2 -mmitigate-rop -fPIE")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FORTIFY_SOURCE=2 -mmitigate-rop -fPIE -mwindows")
 		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--high-entropy-va -Wl,--dynamicbase -Wl,--nxcompat -Wl,-Bstatic -s")
 	elseif(CMAKE_BUILD_TYPE MATCHES Debug)
 		message(STATUS "Hardening disabled for debug build")
@@ -63,7 +63,8 @@ set(SRC
 		src/widgets/pickColorButton.cc src/widgets/pickColorButton.hh
 		src/widgets/brushToolButton.cc src/widgets/brushToolButton.hh
 		src/widgets/eraserToolButton.cc src/widgets/eraserToolButton.hh
-		src/widgets/eyedropperToolButton.cc src/widgets/eyedropperToolButton.hh)
+		src/widgets/eyedropperToolButton.cc src/widgets/eyedropperToolButton.hh
+		src/widgets/fillToolButton.cc src/widgets/fillToolButton.hh)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static -static-libgcc -static-libstdc++") #TODO this isn't working under MSYS2

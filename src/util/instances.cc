@@ -2,16 +2,19 @@
 #include "globals.hh"
 #include "util.hh"
 
-QVBoxLayout *mainLayout = nullptr, *leftBarLayout = nullptr;
-QSplitter *vSplitter = nullptr, *hSplitter = nullptr;
+QVBoxLayout *mainLayout = nullptr, *toolbarLayout = nullptr, *canvasLayout = nullptr;
+QHBoxLayout *leftBarLayout = nullptr, *infoBarLayout = nullptr;
+QSplitter *vSplitter = nullptr, *hSplitter = nullptr, *layersSplitter = nullptr;
+QLabel *magLabel = nullptr;
 
-QWidget *center = nullptr, *timelineContainer = nullptr, *leftBarContainer = nullptr, *rightBarContainer = nullptr;
+QWidget *center = nullptr, *timelineContainer = nullptr, *leftBarContainer = nullptr, *rightBarContainer = nullptr, *toolbarContainer = nullptr, *canvasContainer = nullptr, *infoBarContainer = nullptr;
 MainWindowWidget *mainWindowWidget = nullptr;
 GLWidget *canvasWidget = nullptr;
 PickColorButton *pickColorButton = nullptr;
 BrushToolButton *brushToolButton = nullptr;
 EraserToolButton *eraserToolButton = nullptr;
 EyedropperToolButton *eyedropperToolButton = nullptr;
+FillToolButton *fillToolButton = nullptr;
 
 QMenuBar *menuBar = nullptr;
 QMenu *fileMenu = nullptr;
@@ -20,6 +23,8 @@ QMenu *helpMenu = nullptr;
 
 QAction *screenshotAction = nullptr, *changeToBrushAction = nullptr, *changeToEraserAction = nullptr;
 QShortcut *screenshotShortcut = nullptr;
+
+uint32_t buttonWidth = 40;
 
 void setupGUI()
 {
@@ -85,8 +90,23 @@ QWidget
 	background-color: rgb(30, 30, 30);
 })");
 	
-	leftBarLayout = new QVBoxLayout(leftBarContainer);
+	toolbarContainer = new QWidget(leftBarContainer);
+	toolbarContainer->setFixedWidth(50);
+	toolbarContainer->setMinimumSize(50, 50);
+	toolbarContainer->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
+	toolbarContainer->setStyleSheet(R"(
+QWidget
+{
+	border: 1px solid rgb(100, 100, 100);
+	background-color: rgb(30, 30, 30);
+})");
+	
+	leftBarLayout = new QHBoxLayout(leftBarContainer);
+	leftBarLayout->setContentsMargins(0, 0, 0, 0);
 	leftBarContainer->setLayout(leftBarLayout);
+	
+	toolbarLayout = new QVBoxLayout(toolbarContainer);
+	toolbarLayout->setContentsMargins(5, 5, 5, 5);
 	
 	rightBarContainer = new QWidget(hSplitter);
 	rightBarContainer->setMinimumSize(100, 100);
@@ -97,12 +117,12 @@ QWidget
 	background-color: rgb(30, 30, 30);
 })");
 	
-	pickColorButton = new PickColorButton(leftBarContainer);
-	pickColorButton->setFixedSize(30, 30);
+	pickColorButton = new PickColorButton(toolbarContainer);
+	pickColorButton->setFixedSize(buttonWidth, buttonWidth);
 	pickColorButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	
-	brushToolButton = new BrushToolButton("B", leftBarContainer);
-	brushToolButton->setFixedSize(30, 30);
+	brushToolButton = new BrushToolButton("B", toolbarContainer);
+	brushToolButton->setFixedSize(buttonWidth, buttonWidth);
 	brushToolButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	brushToolButton->setStyleSheet(R"(
 QPushButton
@@ -111,8 +131,8 @@ QPushButton
 	color: white;
 })");
 	
-	eraserToolButton = new EraserToolButton("E", leftBarContainer);
-	eraserToolButton->setFixedSize(30, 30);
+	eraserToolButton = new EraserToolButton("E", toolbarContainer);
+	eraserToolButton->setFixedSize(buttonWidth, buttonWidth);
 	eraserToolButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	eraserToolButton->setStyleSheet(R"(
 QPushButton
@@ -121,8 +141,8 @@ QPushButton
 	color: white;
 })");
 	
-	eyedropperToolButton = new EyedropperToolButton("P", leftBarContainer);
-	eyedropperToolButton->setFixedSize(30, 30);
+	eyedropperToolButton = new EyedropperToolButton("P", toolbarContainer);
+	eyedropperToolButton->setFixedSize(buttonWidth, buttonWidth);
 	eyedropperToolButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	eyedropperToolButton->setStyleSheet(R"(
 QPushButton
@@ -130,6 +150,55 @@ QPushButton
 	background-color: rgb(60, 60, 60);
 	color: white;
 })");
+	
+	fillToolButton = new FillToolButton("F", toolbarContainer);
+	fillToolButton->setFixedSize(buttonWidth, buttonWidth);
+	fillToolButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	fillToolButton->setStyleSheet(R"(
+QPushButton
+{
+	background-color: rgb(60, 60, 60);
+	color: white;
+})");
+	
+	layersSplitter = new QSplitter(leftBarContainer);
+	layersSplitter->setContentsMargins(0, 0, 0, 0);
+	layersSplitter->setMinimumSize(100, 100);
+	layersSplitter->setOrientation(Qt::Vertical);
+	layersSplitter->setStyleSheet(R"(
+QSplitter::handle
+{
+	background-color: rgb(120, 120, 120);
+	border: 1px solid rgb(40, 40, 40);
+})");
+	
+	canvasContainer = new QWidget(hSplitter);
+	
+	canvasLayout = new QVBoxLayout(canvasContainer);
+	canvasLayout->setContentsMargins(0, 0, 0, 0);
+	
+	infoBarContainer = new QWidget(canvasContainer);
+	infoBarContainer->setMinimumSize(20, 100);
+	infoBarContainer->setFixedHeight(20);
+	infoBarContainer->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
+	
+	magLabel = new QLabel("Zoom: 5x", infoBarContainer);
+	magLabel->setAlignment(Qt::AlignCenter);
+	magLabel->setMinimumSize(60, 18);
+	magLabel->setStyleSheet(R"(
+QLabel
+{
+	background-color: white;
+	color: black;
+})");
+	
+	infoBarLayout = new QHBoxLayout(infoBarContainer);
+	infoBarLayout->setContentsMargins(6, 0, 6, 6);
+	
+	infoBarLayout->addWidget(magLabel);
+	
+	canvasLayout->addWidget(canvasWidget);
+	canvasLayout->addWidget(infoBarContainer);
 	
 	//Menus
 	menuBar = new QMenuBar(center);
@@ -154,21 +223,30 @@ QMenuBar:item:selected
 	
 	//Layouts
 	hSplitter->addWidget(leftBarContainer);
-	hSplitter->addWidget(canvasWidget);
+	hSplitter->addWidget(canvasContainer);
 	hSplitter->addWidget(rightBarContainer);
 	hSplitter->setStretchFactor(0, 3);
 	hSplitter->setStretchFactor(1, 10);
-	hSplitter->setStretchFactor(2, 2);
+	hSplitter->setStretchFactor(2, 3);
 	
 	vSplitter->addWidget(hSplitter);
 	vSplitter->addWidget(timelineContainer);
 	vSplitter->setStretchFactor(0, 5);
-	vSplitter->setStretchFactor(1, 1);
+	vSplitter->setStretchFactor(1, 2);
 	
-	leftBarLayout->addWidget(brushToolButton);
-	leftBarLayout->addWidget(eraserToolButton);
-	leftBarLayout->addWidget(eyedropperToolButton);
-	leftBarLayout->addWidget(pickColorButton);
+	QWidget *expandingSpacer = new QWidget(toolbarContainer);
+	expandingSpacer->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
+	
+	toolbarLayout->addWidget(brushToolButton);
+	toolbarLayout->addWidget(eraserToolButton);
+	toolbarLayout->addWidget(eyedropperToolButton);
+	toolbarLayout->addWidget(fillToolButton);
+	toolbarLayout->addWidget(pickColorButton);
+	toolbarLayout->addWidget(expandingSpacer);
+	toolbarContainer->setLayout(toolbarLayout);
+	
+	leftBarLayout->addWidget(layersSplitter);
+	leftBarLayout->addWidget(toolbarContainer);
 	
 	mainLayout->addWidget(menuBar);
 	mainLayout->addWidget(vSplitter);

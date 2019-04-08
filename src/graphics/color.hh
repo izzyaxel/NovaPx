@@ -14,6 +14,7 @@ struct Color
 	Color() = default;
 	
 	Color operator + (Color const &other);
+	bool operator == (Color const &other);
 	
 	void fromRGBf(float r, float g, float b);
 	void fromRGBAf(float r, float g, float b, float a);
