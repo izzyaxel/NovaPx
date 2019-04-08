@@ -71,7 +71,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static -static-libgcc -static-libstdc++
 project(PixelCreator)
 include_directories(include)
 set(CMAKE_AUTOMOC ON)
-find_package(Qt5Widgets REQUIRED)
+find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
 if(WIN32 OR WIN64)
 	set(LIBS Qt5::Widgets -lpng -lz -lgif)

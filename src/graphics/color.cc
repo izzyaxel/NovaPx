@@ -16,6 +16,11 @@ bool Color::operator==(Color const &other)
 	return this->r == other.r && this->g == other.g && this->b == other.b && this->a == other.a;
 }
 
+bool Color::operator!=(Color const &other)
+{
+	return ! this->operator==(other);
+}
+
 void Color::fromRGBf(float r, float g, float b)
 {
 	this->r = static_cast<iFmt>(bound<float>(r, 0.0f, 1.0f) * ui16Max);
@@ -145,4 +150,9 @@ std::string Color::asWeb() const
 	std::stringstream ss;
 	ss << std::hex << (static_cast<uint8_t>(this->r / 256) << 24 | static_cast<uint8_t>(this->g / 256) << 16 | static_cast<uint8_t>(this->b / 256) << 8 | static_cast<uint8_t>(this->a / 256));
 	return "#" + ss.str();
+}
+
+void Color::print()
+{
+	printf("R: %u G: %u B: %u A: %u\n", this->r, this->g, this->b, this->a);
 }

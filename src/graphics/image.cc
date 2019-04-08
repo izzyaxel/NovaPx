@@ -45,14 +45,26 @@ Image::Image(std::string const &filePath)
 	this->setNeedsRedraw();
 }
 
-bool Image::isIndexValid(int32_t x, int32_t y) //TODO something's incorrect, flood fill causes stack overflows
-{
-	return x > 0 && y > 0 && this->index(x, y) <= (this->width * this->height);
-}
-
 size_t Image::index(int32_t x, int32_t y)
 {
 	return x + (y * this->width);
+}
+
+bool Image::areCoordsValid(int32_t x, int32_t y)
+{
+	return x >= 0 && y >= 0 && static_cast<uint32_t>(x) < this->width && static_cast<uint32_t>(y) < this->height;
+}
+
+void Image::floodFill(int32_t x, int32_t y, Color &oldColor, Color &newColor)
+{
+	if(oldColor != newColor && this->areCoordsValid(x, y) && this->getPixel(x, y) == oldColor)
+	{
+		this->setPixel(x, y, newColor);
+		this->floodFill(x + 1, y, oldColor, newColor);
+		this->floodFill(x, y + 1, oldColor, newColor);
+		this->floodFill(x, y - 1, oldColor, newColor);
+		this->floodFill(x - 1, y, oldColor, newColor);
+	}
 }
 
 Color Image::getPixel(int32_t x, int32_t y)
@@ -85,18 +97,6 @@ bool Image::hasUnsavedChanges()
 void Image::setHasUnsavedChanges()
 {
 	this->_unsavedChanges = true;
-}
-
-void Image::floodFill(int32_t x, int32_t y, Color &oldColor, Color &newColor)
-{
-	if(this->isIndexValid(x, y) && this->getPixel(x, y) == oldColor)
-	{
-		this->setPixel(x, y, newColor);
-		this->floodFill(x + 1, y, oldColor, newColor);
-		this->floodFill(x, y + 1, oldColor, newColor);
-		this->floodFill(x, y - 1, oldColor, newColor);
-		this->floodFill(x - 1, y, oldColor, newColor);
-	}
 }
 
 bool Image::empty()

@@ -15,6 +15,7 @@ struct Color
 	
 	Color operator + (Color const &other);
 	bool operator == (Color const &other);
+	bool operator != (Color const &other);
 	
 	void fromRGBf(float r, float g, float b);
 	void fromRGBAf(float r, float g, float b, float a);
@@ -48,6 +49,8 @@ struct Color
 	
 	/// #RRGGBBAA representation
 	std::string asWeb() const;
+	
+	void print();
 
 protected:
 	iFmt r = 0, g = 0, b = 0, a = 1;
