@@ -23,8 +23,22 @@ QPushButton
 
 void PickColorButton::changeColor()
 {
-	QColor newColor = QColorDialog::getColor(this->color, this->parentWidget());
-	if(newColor != this->color) this->setColor(newColor);
+	QColorDialog *dialog = new QColorDialog;
+	dialog->setStyleSheet(R"(
+QColorDialog
+{
+	background-color: rgb(200, 200, 200);
+}
+
+QLabel
+{
+	color: black;
+})");
+	dialog->connect(dialog, &QColorDialog::colorSelected, this, [this](QColor const &newColor)
+	{
+		if(newColor != this->color) this->setColor(newColor);
+	});
+	dialog->show();
 }
 
 void PickColorButton::setColor(QColor const &color)
