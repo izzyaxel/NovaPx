@@ -1,6 +1,7 @@
 #include "eraserToolButton.hh"
 
 #include "../util/globals.hh"
+#include "../util/instances.hh"
 
 EraserToolButton::EraserToolButton(QString name, QWidget *parent) : QPushButton(name, parent)
 {
@@ -10,4 +11,5 @@ EraserToolButton::EraserToolButton(QString name, QWidget *parent) : QPushButton(
 void EraserToolButton::selectTool()
 {
 	State::tool = Tools::ERASER;
+	currentToolLabel->setText("Eraser");
 }

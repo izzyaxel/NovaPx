@@ -1,6 +1,7 @@
 #include "brushToolButton.hh"
 
 #include "../util/globals.hh"
+#include "../util/instances.hh"
 
 BrushToolButton::BrushToolButton(QString name, QWidget *parent) : QPushButton(name, parent)
 {
@@ -10,4 +11,5 @@ BrushToolButton::BrushToolButton(QString name, QWidget *parent) : QPushButton(na
 void BrushToolButton::selectTool()
 {
 	State::tool = Tools::BRUSH;
+	currentToolLabel->setText("Brush");
 }

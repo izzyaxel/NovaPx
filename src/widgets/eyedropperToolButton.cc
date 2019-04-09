@@ -1,6 +1,7 @@
 #include "eyedropperToolButton.hh"
 
 #include "../util/globals.hh"
+#include "../util/instances.hh"
 
 EyedropperToolButton::EyedropperToolButton(QString name, QWidget *parent) : QPushButton(name, parent)
 {
@@ -10,4 +11,5 @@ EyedropperToolButton::EyedropperToolButton(QString name, QWidget *parent) : QPus
 void EyedropperToolButton::selectTool()
 {
 	State::tool = Tools::EYEDROPPER;
+	currentToolLabel->setText("Eyedropper");
 }

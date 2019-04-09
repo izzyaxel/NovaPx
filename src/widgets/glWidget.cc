@@ -85,7 +85,9 @@ void GLWidget::initializeGL()
 	Assets::centeredQuadMesh = MU<Mesh>(centeredQuadVerts, 12, centeredQuadUVs, 8);
 	
 	canvas = MS<Image>(getCWD() + "test.png");
-	canvas->setScale({5});
+	canvas->setScale({50});
+	
+	State::tool = Tools::BRUSH;
 }
 
 void GLWidget::resizeGL(int w, int h)
@@ -157,7 +159,9 @@ void modifyCanvas()
 			case Tools::FLOODFILL:
 				{
 					Color c = canvas->getPixel(pixelCoord.x(), pixelCoord.y());
-					canvas->floodFill(pixelCoord.x(), pixelCoord.y(), c, State::curColor);
+					canvas->floodFill(pixelCoord.x(), pixelCoord.y(), c, State::curColor); //TODO a way to select between the modes
+					//canvas->floodFillDiagonal(pixelCoord.x(), pixelCoord.y(), c, State::curColor);
+					//canvas->replaceColor(c, State::curColor);
 				}
 				break;
 			

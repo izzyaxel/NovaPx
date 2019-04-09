@@ -31,7 +31,14 @@ struct Image
 	
 	void addScale(IR::vec2<int32_t> const &scale);
 	
+	/// Non-recursive (prevents stack overflows) flood fill
 	void floodFill(int32_t x, int32_t y, Color &oldColor, Color &newColor);
+	
+	/// Non-recursive flood fill that affects diagonally touching pixels
+	void floodFillDiagonal(int32_t x, int32_t y, Color &oldColor, Color &newColor);
+	
+	/// Replace all instances of the given color with a new color
+	void replaceColor(Color &oldColor, Color &newColor);
 	
 	/// Is image data present in this image
 	bool empty();

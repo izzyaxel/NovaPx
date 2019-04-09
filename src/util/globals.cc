@@ -36,7 +36,7 @@ namespace State
 {
 	Color curColor, eraserColor, transparencyGridColor1, transparencyGridColor2;
 	uint8_t gridSize = 4;
-	Tools tool = Tools::ERASER;
+	Tools tool = Tools::BRUSH;
 }
 
 namespace Assets

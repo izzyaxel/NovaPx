@@ -34,6 +34,7 @@ QLabel
 {
 	color: black;
 })");
+	dialog->setCurrentColor(this->color);
 	dialog->connect(dialog, &QColorDialog::colorSelected, this, [this](QColor const &newColor)
 	{
 		if(newColor != this->color) this->setColor(newColor);

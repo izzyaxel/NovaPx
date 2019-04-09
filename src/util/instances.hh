@@ -22,9 +22,9 @@ void setupGUI();
 extern QVBoxLayout *mainLayout, *toolbarLayout, *canvasLayout;
 extern QHBoxLayout *leftBarLayout, *infoBarLayout;
 extern QSplitter *vSplitter, *hSplitter, *layersSplitter;
-extern QLabel *magLabel;
+extern QLabel *magLabel, *currentToolLabel;
 
-extern QWidget *center, *timelineContainer, *leftBarContainer, *rightBarContainer, *canvasContainer, *infoBarContainer;
+extern QWidget *center, *timelineContainer, *leftBarContainer, *rightBarContainer, *canvasContainer, *infoBarContainer, *vDiv, *hDiv;
 extern MainWindowWidget *mainWindowWidget;
 extern GLWidget *canvasWidget;
 extern PickColorButton *pickColorButton;

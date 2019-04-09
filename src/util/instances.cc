@@ -5,9 +5,9 @@
 QVBoxLayout *mainLayout = nullptr, *toolbarLayout = nullptr, *canvasLayout = nullptr;
 QHBoxLayout *leftBarLayout = nullptr, *infoBarLayout = nullptr;
 QSplitter *vSplitter = nullptr, *hSplitter = nullptr, *layersSplitter = nullptr;
-QLabel *magLabel = nullptr;
+QLabel *magLabel = nullptr, *currentToolLabel = nullptr;
 
-QWidget *center = nullptr, *timelineContainer = nullptr, *leftBarContainer = nullptr, *rightBarContainer = nullptr, *toolbarContainer = nullptr, *canvasContainer = nullptr, *infoBarContainer = nullptr;
+QWidget *center = nullptr, *timelineContainer = nullptr, *leftBarContainer = nullptr, *rightBarContainer = nullptr, *toolbarContainer = nullptr, *canvasContainer = nullptr, *infoBarContainer = nullptr, *vDiv = nullptr, *hDiv = nullptr;
 MainWindowWidget *mainWindowWidget = nullptr;
 GLWidget *canvasWidget = nullptr;
 PickColorButton *pickColorButton = nullptr;
@@ -28,6 +28,26 @@ uint32_t buttonWidth = 40;
 
 void setupGUI()
 {
+	vDiv = new QWidget;
+	vDiv->setMinimumSize(2, 2);
+	vDiv->setFixedWidth(2);
+	vDiv->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
+	vDiv->setStyleSheet(R"(
+QWidget
+{
+	background-color: rgb(120, 120, 120);
+})");
+	
+	hDiv = new QWidget;
+	hDiv->setMinimumSize(2, 2);
+	hDiv->setFixedWidth(2);
+	hDiv->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
+	hDiv->setStyleSheet(R"(
+QWidget
+{
+	background-color: rgb(120, 120, 120);
+})");
+	
 	mainLayout = new QVBoxLayout;
 	mainLayout->setContentsMargins(0, 0, 0, 0);
 	mainLayout->setSpacing(0);
@@ -163,7 +183,7 @@ QPushButton
 	
 	layersSplitter = new QSplitter(leftBarContainer);
 	layersSplitter->setContentsMargins(0, 0, 0, 0);
-	layersSplitter->setMinimumSize(100, 100);
+	layersSplitter->setMinimumSize(0, 100);
 	layersSplitter->setOrientation(Qt::Vertical);
 	layersSplitter->setStyleSheet(R"(
 QSplitter::handle
@@ -182,20 +202,34 @@ QSplitter::handle
 	infoBarContainer->setFixedHeight(20);
 	infoBarContainer->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
 	
-	magLabel = new QLabel("Zoom: 5x", infoBarContainer);
+	magLabel = new QLabel("", infoBarContainer);
 	magLabel->setAlignment(Qt::AlignCenter);
-	magLabel->setMinimumSize(60, 18);
+	magLabel->setMinimumHeight(14);
+	magLabel->setContentsMargins(0,0,0,6);
 	magLabel->setStyleSheet(R"(
 QLabel
 {
-	background-color: white;
-	color: black;
+	background-color: transparent;
+	color: white;
+})");
+	
+	currentToolLabel = new QLabel("Brush", infoBarContainer);
+	currentToolLabel->setAlignment(Qt::AlignCenter);
+	currentToolLabel->setMinimumHeight(14);
+	currentToolLabel->setContentsMargins(0,0,0,6);
+	currentToolLabel->setStyleSheet(R"(
+QLabel
+{
+	background-color: transparent;
+	color: white;
 })");
 	
 	infoBarLayout = new QHBoxLayout(infoBarContainer);
-	infoBarLayout->setContentsMargins(6, 0, 6, 6);
+	infoBarLayout->setContentsMargins(6, 0, 6, 0);
 	
 	infoBarLayout->addWidget(magLabel);
+	infoBarLayout->addWidget(vDiv);
+	infoBarLayout->addWidget(currentToolLabel);
 	
 	canvasLayout->addWidget(canvasWidget);
 	canvasLayout->addWidget(infoBarContainer);
@@ -225,7 +259,7 @@ QMenuBar:item:selected
 	hSplitter->addWidget(leftBarContainer);
 	hSplitter->addWidget(canvasContainer);
 	hSplitter->addWidget(rightBarContainer);
-	hSplitter->setStretchFactor(0, 3);
+	hSplitter->setStretchFactor(0, 6);
 	hSplitter->setStretchFactor(1, 10);
 	hSplitter->setStretchFactor(2, 3);
 	

@@ -4,6 +4,8 @@
 #include "../util/io.hh"
 #include "../util/instances.hh"
 
+#include <queue>
+
 Image::Image(std::string const &filePath)
 {
 	PNG png = readPNG(filePath);
@@ -57,14 +59,48 @@ bool Image::areCoordsValid(int32_t x, int32_t y)
 
 void Image::floodFill(int32_t x, int32_t y, Color &oldColor, Color &newColor)
 {
-	if(oldColor != newColor && this->areCoordsValid(x, y) && this->getPixel(x, y) == oldColor)
+	if(oldColor == newColor) return;
+	std::queue<IR::vec2<int32_t>> pixels;
+	pixels.emplace(x, y);
+	do
 	{
-		this->setPixel(x, y, newColor);
-		this->floodFill(x + 1, y, oldColor, newColor);
-		this->floodFill(x, y + 1, oldColor, newColor);
-		this->floodFill(x, y - 1, oldColor, newColor);
-		this->floodFill(x - 1, y, oldColor, newColor);
-	}
+		IR::vec2<int32_t> p = pixels.front();
+		int32_t pX = p.x(), pY = p.y();
+		pixels.pop();
+		this->setPixel(p.x(), p.y(), newColor);
+		if(this->areCoordsValid(pX + 1, pY) && this->getPixel(pX + 1, pY) == oldColor) pixels.emplace(pX + 1, pY);
+		if(this->areCoordsValid(pX - 1, pY) && this->getPixel(pX - 1, pY) == oldColor) pixels.emplace(pX - 1, pY);
+		if(this->areCoordsValid(pX, pY + 1) && this->getPixel(pX, pY + 1) == oldColor) pixels.emplace(pX, pY + 1);
+		if(this->areCoordsValid(pX, pY - 1) && this->getPixel(pX, pY - 1) == oldColor) pixels.emplace(pX, pY - 1);
+	} while(!pixels.empty());
+}
+
+void Image::floodFillDiagonal(int32_t x, int32_t y, Color &oldColor, Color &newColor)
+{
+	if(oldColor == newColor) return;
+	std::queue<IR::vec2<int32_t>> pixels;
+	pixels.emplace(x, y);
+	do
+	{
+		IR::vec2<int32_t> p = pixels.front();
+		int32_t pX = p.x(), pY = p.y();
+		pixels.pop();
+		this->setPixel(p.x(), p.y(), newColor);
+		if(this->areCoordsValid(pX + 1, pY) && this->getPixel(pX + 1, pY) == oldColor) pixels.emplace(pX + 1, pY);
+		if(this->areCoordsValid(pX - 1, pY) && this->getPixel(pX - 1, pY) == oldColor) pixels.emplace(pX - 1, pY);
+		if(this->areCoordsValid(pX, pY + 1) && this->getPixel(pX, pY + 1) == oldColor) pixels.emplace(pX, pY + 1);
+		if(this->areCoordsValid(pX, pY - 1) && this->getPixel(pX, pY - 1) == oldColor) pixels.emplace(pX, pY - 1);
+		if(this->areCoordsValid(pX + 1, pY + 1) && this->getPixel(pX + 1, pY + 1) == oldColor) pixels.emplace(pX + 1, pY + 1);
+		if(this->areCoordsValid(pX - 1, pY - 1) && this->getPixel(pX - 1, pY - 1) == oldColor) pixels.emplace(pX - 1, pY - 1);
+		if(this->areCoordsValid(pX - 1, pY + 1) && this->getPixel(pX - 1, pY + 1) == oldColor) pixels.emplace(pX - 1, pY + 1);
+		if(this->areCoordsValid(pX + 1, pY - 1) && this->getPixel(pX + 1, pY - 1) == oldColor) pixels.emplace(pX + 1, pY - 1);
+	} while(!pixels.empty());
+}
+
+void Image::replaceColor(Color &oldColor, Color &newColor)
+{
+	if(oldColor == newColor) return;
+	for(auto &pixel : this->imageData) if(pixel == oldColor) pixel = newColor;
 }
 
 Color Image::getPixel(int32_t x, int32_t y)
