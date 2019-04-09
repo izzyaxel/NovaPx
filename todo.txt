@@ -1,0 +1,13 @@
+Cursor icons, highlight the pixel being hovered over
+Move canvas to QImage, make a custom QWidget to pan and zoom the canvas
+Undo/Redo queue, make an action class to hold all changed data for that action
+Fill tolerance, use luma equation?
+Selection tools
+Shape tools
+Right click context menu for current tool
+Size slider for tools it's relevant to
+.NPX project file format, public API project that builds a DLL
+.NPA palette animation format, public API project that builds a DLL
+GIF import and export support
+UI design for palette, layers, and timeline bars
+Tabs to support opening multiple files
