@@ -1,5 +1,5 @@
-# PixelCreator
-Temporary name.  A pixel art creation and animation tool written in C++ and OpenGL 4.5+
+# NovaPx
+A pixel art creation and animation tool written in C++ and OpenGL 4.5+
 
 To build from source on Windows:
 - Install MSYS2

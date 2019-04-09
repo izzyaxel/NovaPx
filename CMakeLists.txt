@@ -68,7 +68,7 @@ set(SRC
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static -static-libgcc -static-libstdc++") #TODO this isn't working under MSYS2
-project(PixelCreator)
+project(NovaPx)
 include_directories(include)
 set(CMAKE_AUTOMOC ON)
 find_package(Qt5 COMPONENTS Widgets REQUIRED)

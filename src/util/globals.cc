@@ -4,8 +4,8 @@ SP<Image> canvas;
 
 namespace Info
 {
-	uint32_t majorVersion = 1, minorVersion = 0, bugfixVersion = 0;
-	std::string windowName = "PixelCreator | " + std::to_string(majorVersion) + "." + std::to_string(minorVersion) + "." + std::to_string(bugfixVersion);
+	uint32_t majorVersion = 1, minorVersion = 2, bugfixVersion = 6;
+	std::string windowName = "NovaPx | " + std::to_string(majorVersion) + "." + std::to_string(minorVersion) + "." + std::to_string(bugfixVersion);
 	bool exiting = false, screenshotQueued = false;
 	std::string screenshotDir = "";
 }
