@@ -145,13 +145,18 @@ void Image::setMagLabel()
 	magLabel->setText(QString::fromStdString("Zoom: " + std::to_string(this->scale.x()) + "x"));
 }
 
+void Image::limitScale()
+{
+	if(this->scale.x() < 1) this->scale.x() = 1;
+	if(this->scale.y() < 1) this->scale.y() = 1;
+	if(this->scale.x() > 500) this->scale.x() = 500;
+	if(this->scale.y() > 500) this->scale.y() = 500;
+}
+
 void Image::setScale(IR::vec2<int32_t> const &scale)
 {
 	this->scale = scale;
-	if(this->scale.x() < 1) this->scale.x() = 1;
-	if(this->scale.y() < 1) this->scale.y() = 1;
-	if(this->scale.x() > 150) this->scale.x() = 150;
-	if(this->scale.y() > 150) this->scale.y() = 150;
+	this->limitScale();
 	this->setNeedsRedraw();
 	this->setMagLabel();
 }
@@ -159,10 +164,7 @@ void Image::setScale(IR::vec2<int32_t> const &scale)
 void Image::addScale(IR::vec2<int32_t> const &scale)
 {
 	this->scale += scale;
-	if(this->scale.x() < 1) this->scale.x() = 1;
-	if(this->scale.y() < 1) this->scale.y() = 1;
-	if(this->scale.x() > 150) this->scale.x() = 150;
-	if(this->scale.y() > 150) this->scale.y() = 150;
+	this->limitScale();
 	this->setNeedsRedraw();
 	this->setMagLabel();
 }

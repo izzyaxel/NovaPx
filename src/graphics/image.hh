@@ -52,6 +52,7 @@ struct Image
 	IR::vec2<int32_t> scale{1, 1};
 
 private:
+	void limitScale();
 	bool areCoordsValid(int32_t x, int32_t y);
 	
 	bool _needsRedraw = false, _unsavedChanges = true;

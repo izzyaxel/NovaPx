@@ -133,7 +133,7 @@ void modifyCanvas()
 	IR::vec2<int32_t> worldspaceClick = Mouse::pos + Camera::pos;
 	worldspaceClick.y() = -worldspaceClick.y();
 	IR::vec2<uint32_t> curCanvasSize(canvas->scale * IR::vec2<uint32_t>(canvas->width, canvas->height));
-	IR::vec2<int32_t> canvasOffsets(curCanvasSize / 2.0f);
+	IR::vec2<int32_t> canvasOffsets(curCanvasSize / 2);
 	if(worldspaceClick.x() > -canvasOffsets.x() && worldspaceClick.x() < canvasOffsets.x() && worldspaceClick.y() > -canvasOffsets.y() && worldspaceClick.y() < canvasOffsets.y())
 	{
 		IR::vec2<uint32_t> imageSpaceClick(static_cast<uint32_t>(std::abs(worldspaceClick.x() + canvasOffsets.x())), static_cast<uint32_t>(std::abs(worldspaceClick.y() - canvasOffsets.y())));
