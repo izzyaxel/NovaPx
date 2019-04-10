@@ -2,7 +2,8 @@
 #include "png.hh"
 #include "../util/util.hh"
 #include "../util/io.hh"
-#include "../util/instances.hh"
+#include "../util/gui.hh"
+#include "../util/globals.hh"
 
 #include <queue>
 
@@ -147,10 +148,10 @@ void Image::setMagLabel()
 
 void Image::limitScale()
 {
-	if(this->scale.x() < 1) this->scale.x() = 1;
-	if(this->scale.y() < 1) this->scale.y() = 1;
-	if(this->scale.x() > 500) this->scale.x() = 500;
-	if(this->scale.y() > 500) this->scale.y() = 500;
+	if(this->scale.x() < Camera::minZoom) this->scale.x() = Camera::minZoom;
+	if(this->scale.y() < Camera::minZoom) this->scale.y() = Camera::minZoom;
+	if(this->scale.x() > Camera::maxZoom) this->scale.x() = Camera::maxZoom;
+	if(this->scale.y() > Camera::maxZoom) this->scale.y() = Camera::maxZoom;
 }
 
 void Image::setScale(IR::vec2<int32_t> const &scale)

@@ -25,6 +25,7 @@ namespace Keyboard
 namespace Camera
 {
 	IR::vec2<int32_t> pos{0};
+	int32_t minZoom = 1, maxZoom = 1000;
 }
 
 namespace Context

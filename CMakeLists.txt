@@ -18,7 +18,7 @@ elseif(UNIX)
 	if(CMAKE_BUILD_TYPE MATCHES Release)
 		set(ARCH "x86_64")
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FORTIFY_SOURCE=2 -mmitigate-rop -fstack-protector-strong -fPIE")
-		set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,high-entropy-va -Wl,-Bstatic")
+		set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,high-entropy-va")
 	elseif(CMAKE_BUILD_TYPE MATCHES Debug)
 		message(STATUS "Hardening disabled for debug build")
 	endif()
@@ -56,7 +56,7 @@ set(SRC
 		src/util/event.hh
 		src/util/threadPool.cc src/util/threadPool.hh
 		src/util/util.cc src/util/util.hh
-		src/util/instances.cc src/util/instances.hh
+		src/util/gui.cc src/util/gui.hh
 		
 		src/widgets/glWidget.cc src/widgets/glWidget.hh
 		src/widgets/mainWindowWidget.cc src/widgets/mainWindowWidget.hh
@@ -67,7 +67,7 @@ set(SRC
 		src/widgets/fillToolButton.cc src/widgets/fillToolButton.hh)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static -static-libgcc -static-libstdc++") #TODO this isn't working under MSYS2
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static -static-libgcc -static-libstdc++") #TODO this isn't working under MSYS2
 project(NovaPx)
 include_directories(include)
 set(CMAKE_AUTOMOC ON)

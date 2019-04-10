@@ -1,7 +1,7 @@
 #include "brushToolButton.hh"
 
 #include "../util/globals.hh"
-#include "../util/instances.hh"
+#include "../util/gui.hh"
 
 BrushToolButton::BrushToolButton(QString name, QWidget *parent) : QPushButton(name, parent)
 {

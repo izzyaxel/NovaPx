@@ -6,7 +6,7 @@
 #include "../assets/shaders.hh"
 #include "../assets/meshes.hh"
 #include "../util/threadPool.hh"
-#include "../util/instances.hh"
+#include "../util/gui.hh"
 #include "../graphics/texture.hh"
 
 #include <QtGui/QMouseEvent>
@@ -18,6 +18,7 @@
 #include <iris/vec4.hh>
 #include <iris/vec2.hh>
 #include <iris/shapes.hh>
+#include <iris/interpolation.hh>
 
 void screenshotIOThread(std::string const &folderPath, uint32_t width, uint32_t height, std::vector<unsigned char> pixels)
 {
@@ -85,7 +86,7 @@ void GLWidget::initializeGL()
 	Assets::centeredQuadMesh = MU<Mesh>(centeredQuadVerts, 12, centeredQuadUVs, 8);
 	
 	canvas = MS<Image>(getCWD() + "test.png");
-	canvas->setScale({50});
+	canvas->setScale({1});
 	
 	State::tool = Tools::BRUSH;
 }
@@ -239,9 +240,19 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 	}
 }
 
+float loglerp(float a, float b, float progress)
+{
+	return a * std::pow(b / a, progress);
+}
+
 void GLWidget::wheelEvent(QWheelEvent *event)
 {
-	canvas->addScale(IR::vec2<int32_t>{event->delta() > 0 ? 1 : -1});
+	float maxAccum = 15.0f;
+	int32_t sign = event->delta() > 0 ? 1 : -1;
+	this->accum += sign;
+	if(this->accum < 0.0f) this->accum = 0.0f;
+	if(this->accum > maxAccum) this->accum = maxAccum;
+	canvas->setScale({static_cast<int32_t>(loglerp(Camera::minZoom, Camera::maxZoom, this->accum / maxAccum))});
 }
 
 void GLWidget::keyPressEvent(QKeyEvent *event)

@@ -32,4 +32,5 @@ protected:
 
 private:
 	IR::mat4x4<float> m, v, p, mvp;
+	float accum = 0.0f;
 };

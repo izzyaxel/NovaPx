@@ -1,7 +1,7 @@
 #include "eyedropperToolButton.hh"
 
 #include "../util/globals.hh"
-#include "../util/instances.hh"
+#include "../util/gui.hh"
 
 EyedropperToolButton::EyedropperToolButton(QString name, QWidget *parent) : QPushButton(name, parent)
 {
