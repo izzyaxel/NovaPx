@@ -17,7 +17,7 @@ public:
 	
 	void screenshot(std::string const &folderPath, uint32_t width, uint32_t height);
 	
-	QTimer *timer;
+	QTimer *timer, *zoomTimer;
 
 protected:
 	void initializeGL() override;
@@ -32,5 +32,6 @@ protected:
 
 private:
 	IR::mat4x4<float> m, v, p, mvp;
-	float accum = 0.0f;
+	float prevAccum = 0.0f, accum = 0.0f, maxAccum = 30, zoomTimerDuration = 100.0f;
+	double framerate = 60.0;
 };

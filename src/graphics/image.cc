@@ -154,7 +154,7 @@ void Image::limitScale()
 	if(this->scale.y() > Camera::maxZoom) this->scale.y() = Camera::maxZoom;
 }
 
-void Image::setScale(IR::vec2<int32_t> const &scale)
+void Image::setScale(IR::vec2<float> const &scale)
 {
 	this->scale = scale;
 	this->limitScale();
@@ -162,7 +162,7 @@ void Image::setScale(IR::vec2<int32_t> const &scale)
 	this->setMagLabel();
 }
 
-void Image::addScale(IR::vec2<int32_t> const &scale)
+void Image::addScale(IR::vec2<float> const &scale)
 {
 	this->scale += scale;
 	this->limitScale();

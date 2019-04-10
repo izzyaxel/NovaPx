@@ -27,9 +27,9 @@ struct Image
 	
 	void setHasUnsavedChanges();
 	
-	void setScale(IR::vec2<int32_t> const &scale);
+	void setScale(IR::vec2<float> const &scale);
 	
-	void addScale(IR::vec2<int32_t> const &scale);
+	void addScale(IR::vec2<float> const &scale);
 	
 	/// Non-recursive (prevents stack overflows) flood fill
 	void floodFill(int32_t x, int32_t y, Color &oldColor, Color &newColor);
@@ -49,7 +49,7 @@ struct Image
 	char colorFormat = 'a', bitDepth = 'a';
 	std::string filePath;
 	std::vector<Color> imageData;
-	IR::vec2<int32_t> scale{1, 1};
+	IR::vec2<float> scale{1};
 
 private:
 	void limitScale();

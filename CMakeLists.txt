@@ -64,7 +64,7 @@ set(SRC
 		src/widgets/brushToolButton.cc src/widgets/brushToolButton.hh
 		src/widgets/eraserToolButton.cc src/widgets/eraserToolButton.hh
 		src/widgets/eyedropperToolButton.cc src/widgets/eyedropperToolButton.hh
-		src/widgets/fillToolButton.cc src/widgets/fillToolButton.hh)
+		src/widgets/fillToolButton.cc src/widgets/fillToolButton.hh src/widgets/workspaceWidget.cc src/widgets/workspaceWidget.hh)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static -static-libgcc -static-libstdc++") #TODO this isn't working under MSYS2

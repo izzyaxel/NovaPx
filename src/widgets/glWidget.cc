@@ -20,7 +20,7 @@
 #include <iris/shapes.hh>
 #include <iris/interpolation.hh>
 
-void screenshotIOThread(std::string const &folderPath, uint32_t width, uint32_t height, std::vector<unsigned char> pixels)
+static void screenshotIOThread(std::string const &folderPath, uint32_t width, uint32_t height, std::vector<unsigned char> pixels)
 {
 	createDirectory(folderPath); //Create the screenshots directory if it doesn't exist
 	std::string fileName = "Screenshot ";
@@ -38,12 +38,28 @@ void screenshotIOThread(std::string const &folderPath, uint32_t width, uint32_t 
 	delete[] pngData;
 }
 
+static float loglerp(float a, float b, float progress)
+{
+	return a * std::pow(b / a, progress);
+}
+
 GLWidget::GLWidget(QWidget *parent) : QOpenGLWidget(parent)
 {
 	this->timer = new QTimer(this);
 	QObject::connect(this->timer, &QTimer::timeout, this->timer, [&](){this->update();});
-	this->timer->setInterval(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::duration<double>(1.0 / 60.0)));
+	this->timer->setInterval(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::duration<double>(1.0 / this->framerate)));
 	this->timer->start();
+	
+	this->zoomTimer = new QTimer(this);
+	this->zoomTimer->setSingleShot(true);
+	QObject::connect(this->zoomTimer, &QTimer::timeout, this->zoomTimer, [this]()
+	{
+		float progress = this->zoomTimer->remainingTime() / this->zoomTimerDuration;
+		float start = canvas->scale.x();
+		float end = loglerp(Camera::minZoom, Camera::maxZoom, 1);
+		canvas->setScale({loglerp(start, end, progress)});
+	});
+	this->zoomTimer->setInterval(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::duration<double>(1.0 / this->framerate)));
 	
 	QSurfaceFormat fmt = QSurfaceFormat::defaultFormat();
 	fmt.setVersion(4, 5);
@@ -59,6 +75,8 @@ GLWidget::~GLWidget()
 	this->makeCurrent();
 	Assets::objectShader.reset();
 	Assets::centeredQuadMesh.reset();
+	delete this->timer;
+	delete this->zoomTimer;
 }
 
 void GLWidget::initializeGL()
@@ -129,7 +147,7 @@ void GLWidget::paintGL()
 	}
 }
 
-void modifyCanvas()
+static void modifyCanvas()
 {
 	IR::vec2<int32_t> worldspaceClick = Mouse::pos + Camera::pos;
 	worldspaceClick.y() = -worldspaceClick.y();
@@ -240,19 +258,15 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 	}
 }
 
-float loglerp(float a, float b, float progress)
-{
-	return a * std::pow(b / a, progress);
-}
-
 void GLWidget::wheelEvent(QWheelEvent *event)
 {
-	float maxAccum = 15.0f;
 	int32_t sign = event->delta() > 0 ? 1 : -1;
+	this->prevAccum = this->accum;
 	this->accum += sign;
 	if(this->accum < 0.0f) this->accum = 0.0f;
-	if(this->accum > maxAccum) this->accum = maxAccum;
-	canvas->setScale({static_cast<int32_t>(loglerp(Camera::minZoom, Camera::maxZoom, this->accum / maxAccum))});
+	if(this->accum > this->maxAccum) this->accum = this->maxAccum;
+	this->zoomTimer->start();
+	//canvas->setScale({std::max<int32_t>(canvas->scale.x() + 1, static_cast<int32_t>(loglerp(Camera::minZoom, Camera::maxZoom, this->accum / maxAccum)))});
 }
 
 void GLWidget::keyPressEvent(QKeyEvent *event)
