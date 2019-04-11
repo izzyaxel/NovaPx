@@ -6,6 +6,38 @@
 
 namespace Iris
 {
+	//Value
+	/// Adjustable lerp
+	/// \param a Start
+	/// \param b End
+	/// \param progress 0-1
+	/// \param curve ==1 is linear, >1 is ease in-out, <1 is inverse ease in-out
+	template <typename T> T alerp(T a, T b, T progress, T curve)
+	{
+		T expProg = std::pow(progress, curve);
+		T lerp = expProg / (expProg + std::pow(static_cast<T>(1) - progress, curve));
+		return (static_cast<T>(1) - lerp) * a  + lerp * b;
+	}
+	
+	/// Logarithmic lerp, return value approaches b logarithmically faster as progress approaches 1
+	/// \param a Start
+	/// \param b End
+	/// \param progress 0-1
+	template <typename T> T loglerp(T a, T b, T progress)
+	{
+		return a * std::pow(b / a, progress);
+	}
+	
+	/// Standard linear interpolation
+	/// \param a Start
+	/// \param b End
+	/// \param progress 0-1
+	template <typename T> T lerp(T a, T b, T progress)
+	{
+		return a * std::pow(b / a, progress);
+	}
+	
+	//Vec2
 	/// Lerp between 2 2-dimensional vectors
 	template<typename T> vec2<T> lerpV2(vec2<T> const &src, vec2<T> const &dest, float progress)
 	{
@@ -51,6 +83,8 @@ namespace Iris
 		return lerpV2(src, dest, static_cast<float>(std::pow(progress, 3) * (progress * (static_cast<T>(6.0) * progress - static_cast<T>(15.0)) + static_cast<T>(10.0))));
 	}
 
+	
+	//Vec3
 	/// Lerp between 2 3-dimensional vectors
 	template<typename T> vec3<T> lerpV3(vec3<T> const &src, vec3<T> const &dest, float progress)
 	{
@@ -97,6 +131,8 @@ namespace Iris
 		return lerpV3(src, dest, static_cast<float>(std::pow(progress, 3) * (progress * (static_cast<T>(6.0) * progress - static_cast<T>(15.0)) + static_cast<T>(10.0))));
 	}
 
+	
+	//Vec4
 	/// Lerp between 2 4-dimensional vectors
 	template<typename T> vec4<T> lerpV4(vec4<T> const &src, vec4<T> const &dest, float progress)
 	{
@@ -143,7 +179,8 @@ namespace Iris
 	{
 		return lerpV4(src, dest, static_cast<float>(std::pow(progress, 3) * (progress * (static_cast<T>(6.0) * progress - static_cast<T>(15.0)) + static_cast<T>(10.0))));
 	}
-
+	
+	//Quat
 	/// Quaternion spherical linear interpolation
 	template<typename T> quat<T> slerpQuat(quat<T> const &A, quat<T> const &B, T value)
 	{
@@ -155,8 +192,8 @@ namespace Iris
 		T sqi = std::sqrt(static_cast<T>(1) - dot * dot);
 		T vA = std::sin((static_cast<T>(1) - value) * angle) / sqi;
 		T vB = std::sin(value * angle) / sqi;
-		return quat<T>{
-				A[0] * vA + B[0] * vB,
+		return quat<T>
+				{A[0] * vA + B[0] * vB,
 				A[1] * vA + B[1] * vB,
 				A[2] * vA + B[2] * vB,
 				A[3] * vA + B[3] * vB}.normalized();

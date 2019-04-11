@@ -32,6 +32,7 @@ protected:
 
 private:
 	IR::mat4x4<float> m, v, p, mvp;
-	float prevAccum = 0.0f, accum = 0.0f, maxAccum = 30, zoomTimerDuration = 100.0f;
-	double framerate = 60.0;
+	float prevAccum = 0.0f, accum = 0.0f, maxAccum = 30, zoomTimerDuration = 10.0f, progress = 0.0;
+	double framerate = 120.0;
+	int32_t sign = 1;
 };

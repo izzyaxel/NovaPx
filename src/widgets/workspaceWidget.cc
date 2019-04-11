@@ -149,5 +149,5 @@ void WorkspaceWidget::wheelEvent(QWheelEvent *event)
 	this->accum += sign;
 	if(this->accum < 0.0f) this->accum = 0.0f;
 	if(this->accum > this->maxAccum) this->accum = this->maxAccum;
-	canvas->setScale({std::max<int32_t>(canvas->scale.x() + 1, static_cast<int32_t>(loglerp(Camera::minZoom, Camera::maxZoom, this->accum / maxAccum)))});
+	canvas->setScale({std::max<float>(canvas->scale.x() + 1.0f, loglerp(Camera::minZoom, Camera::maxZoom, this->accum / maxAccum))});
 }
