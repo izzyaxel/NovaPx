@@ -56,7 +56,7 @@ GLWidget::GLWidget(QWidget *parent) : QOpenGLWidget(parent) //TODO zooming out d
 		float time = std::min(this->prevAccum, this->accum) / std::max(this->prevAccum, this->accum);
 		float end = static_cast<int32_t>(IR::loglerp<float>(Camera::minZoom, Camera::maxZoom, time));
 		end = std::max(start + this->sign, end);
-		float result = IR::plerp<float>(start, end, this->progress, 2.0f);
+		float result = IR::alerp<float>(start, end, this->progress, 2.0f);
 		if(result > end) result = end;
 		canvas->setScale({result});
 		if(this->progress >= remap)
@@ -156,11 +156,7 @@ void GLWidget::paintGL()
 
 static void modifyCanvas() //TODO pixel selection breaks when panned
 {
-	/*IR::vec2<int32_t> worldspaceClick = Mouse::pos;
-	worldspaceClick.y() = -worldspaceClick.y();
-	worldspaceClick += Camera::pos;*/
-	int32_t x = Mouse::pos.x(), y = -Mouse::pos.y() + (static_cast<int32_t>(Context::height) / 2);
-	IR::vec2<int32_t> worldspaceClick = IR::vec2<int32_t>{x, y} + Camera::pos;
+	IR::vec2<int32_t> worldspaceClick = IR::vec2<int32_t>(Mouse::pos.x(), static_cast<int32_t>(Context::height) - Mouse::pos.y()) + Camera::pos;
 	IR::vec2<uint32_t> curCanvasSize(canvas->scale * IR::vec2<uint32_t>(canvas->width, canvas->height));
 	IR::vec2<int32_t> canvasOffsets(curCanvasSize / 2);
 	if(worldspaceClick.x() > -canvasOffsets.x() && worldspaceClick.x() < canvasOffsets.x() && worldspaceClick.y() > -canvasOffsets.y() && worldspaceClick.y() < canvasOffsets.y())
