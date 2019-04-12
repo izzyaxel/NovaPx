@@ -143,7 +143,7 @@ bool Image::empty()
 
 void Image::setMagLabel()
 {
-	magLabel->setText(QString::fromStdString("Zoom: " + std::to_string(this->scale.x()) + "x"));
+	magLabel->setText(QString::fromStdString("Zoom: " + std::to_string(static_cast<int32_t>(this->scale.x())) + "x"));
 }
 
 void Image::limitScale()
