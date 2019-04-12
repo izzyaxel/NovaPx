@@ -269,12 +269,12 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 
 void GLWidget::wheelEvent(QWheelEvent *event)
 {
-	float maxAccum = 15.0f;
+	float maxAccum = 50.0f;
 	int32_t sign = event->delta() > 0 ? 1 : -1;
 	this->accum += sign;
 	if(this->accum < 0.0f) this->accum = 0.0f;
 	if(this->accum > maxAccum) this->accum = maxAccum;
-	canvas->setScale({std::floor(IR::loglerp<float>(Camera::minZoom, Camera::maxZoom, this->accum / maxAccum))});
+	canvas->setScale(std::max({std::max(1.0f, std::floor(IR::alerp<float>(Camera::minZoom, Camera::maxZoom, this->accum / maxAccum, 1.2f)))}));
 	
 	/*if(this->progress == 0)
 	{
