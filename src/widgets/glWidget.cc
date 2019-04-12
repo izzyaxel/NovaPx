@@ -45,7 +45,7 @@ GLWidget::GLWidget(QWidget *parent) : QOpenGLWidget(parent) //TODO zooming out d
 	this->timer->setInterval(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::duration<double>(1.0 / this->framerate)));
 	this->timer->start();
 	
-	this->zoomTimer = new QTimer(this);
+	/*this->zoomTimer = new QTimer(this);
 	QObject::connect(this->zoomTimer, &QTimer::timeout, this->zoomTimer, [this]()
 	{
 		float remap = 1.0f;
@@ -66,7 +66,7 @@ GLWidget::GLWidget(QWidget *parent) : QOpenGLWidget(parent) //TODO zooming out d
 			canvas->setScale({std::floor(canvas->scale.x())});
 		}
 	});
-	this->zoomTimer->setInterval(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::duration<double>(1.0 / this->framerate)));
+	this->zoomTimer->setInterval(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::duration<double>(1.0 / this->framerate)));*/
 	
 	QSurfaceFormat fmt = QSurfaceFormat::defaultFormat();
 	fmt.setVersion(4, 5);
@@ -83,7 +83,7 @@ GLWidget::~GLWidget()
 	Assets::objectShader.reset();
 	Assets::centeredQuadMesh.reset();
 	delete this->timer;
-	delete this->zoomTimer;
+	//delete this->zoomTimer;
 }
 
 void GLWidget::initializeGL()
@@ -269,7 +269,14 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 
 void GLWidget::wheelEvent(QWheelEvent *event)
 {
-	if(this->progress == 0)
+	float maxAccum = 15.0f;
+	int32_t sign = event->delta() > 0 ? 1 : -1;
+	this->accum += sign;
+	if(this->accum < 0.0f) this->accum = 0.0f;
+	if(this->accum > maxAccum) this->accum = maxAccum;
+	canvas->setScale({std::floor(IR::loglerp<float>(Camera::minZoom, Camera::maxZoom, this->accum / maxAccum))});
+	
+	/*if(this->progress == 0)
 	{
 		this->sign = event->delta() > 0 ? 1 : -1;
 		this->prevAccum = this->accum;
@@ -277,7 +284,7 @@ void GLWidget::wheelEvent(QWheelEvent *event)
 		if(this->accum < 0.0f) this->accum = 0.0f;
 		if(this->accum > this->maxAccum) this->accum = this->maxAccum;
 		this->zoomTimer->start();
-	}
+	}*/
 }
 
 void GLWidget::keyPressEvent(QKeyEvent *event)

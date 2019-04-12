@@ -17,7 +17,8 @@ public:
 	
 	void screenshot(std::string const &folderPath, uint32_t width, uint32_t height);
 	
-	QTimer *timer, *zoomTimer;
+	QTimer *timer;
+	//QTimer *zoomTimer;
 
 protected:
 	void initializeGL() override;
