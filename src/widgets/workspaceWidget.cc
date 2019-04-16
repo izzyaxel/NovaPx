@@ -60,9 +60,9 @@ WorkspaceWidget::WorkspaceWidget(QWidget *parent) : QWidget(parent)
 	this->updateTimer->start();
 	this->setMouseTracking(true);
 	canvas = MS<Image>(getCWD() + "test.png");
-	this->qCanvas = QImage(canvas->width, canvas->height, QImage::Format_RGBA64);
+	this->qCanvas = QImage(canvas->width, canvas->height, QImage::Format_ARGB32);
 	this->qCanvas.fill(QColor::fromRgb(255, 255, 255));
-	canvas->updateQImage(this->qCanvas);
+	canvas->updateQImageARGB32(this->qCanvas);
 	this->qCanvas.save("out.png", "PNG", 100);
 }
 

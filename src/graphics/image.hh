@@ -13,9 +13,13 @@ struct Image
 	
 	explicit Image(std::string const &filePath);
 	
-	void updateQImage(QImage &qImage);
+	void updateQImageRGBA64(QImage &qImage);
+	
+	void updateQImageARGB32(QImage &qImage);
 	
 	uint16_t* scanlineRGBA64(int row);
+	
+	uint8_t* scanlineARGB32(int row);
 	
 	/// Get the pixel at the given x, y position in the image, starting from the top-left, left to right, top to bottom
 	Color getPixel(int32_t x, int32_t y);

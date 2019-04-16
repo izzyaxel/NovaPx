@@ -51,7 +51,7 @@ Image::Image(std::string const &filePath)
 	this->setNeedsRedraw();
 }
 
-void Image::updateQImage(QImage &qImage)
+void Image::updateQImageRGBA64(QImage &qImage)
 {
 	for(uint32_t i = 0; i < this->height; i++)
 	{
@@ -60,9 +60,41 @@ void Image::updateQImage(QImage &qImage)
 	}
 }
 
+void Image::updateQImageARGB32(QImage &qImage)
+{
+	/*for(uint32_t i = 0; i < this->height; i++)
+	{
+		if(this->scanlineDirty[i]) memcpy(qImage.scanLine(i), this->scanlineARGB32(i), this->width * (sizeof(uint8_t) * 4));
+		this->scanlineDirty[i] = false;
+	}*/
+	for(uint32_t y = 0; y < this->height; y++)
+	{
+		QRgb * scanline = reinterpret_cast<QRgb *>(qImage.scanLine(y));
+		for(uint32_t x = 0; x < this->width; x++)
+		{
+			auto color = this->getPixel(x, y);
+			scanline[x] = qRgba(color.data.r(), color.data.g(), color.data.b(), color.data.a());
+		}
+	}
+}
+
 uint16_t* Image::scanlineRGBA64(int row)
 {
 	return reinterpret_cast<uint16_t *>(this->imageData[row].data());
+}
+
+uint8_t* Image::scanlineARGB32(int row)
+{
+	std::vector<uint8_t> data;
+	for(auto const &c : this->imageData[row])
+	{
+		auto color = c.asRGBAui8();
+		data.push_back(color.a());
+		data.push_back(color.r());
+		data.push_back(color.g());
+		data.push_back(color.b());
+	}
+	return data.data();
 }
 
 bool Image::areCoordsValid(int32_t x, int32_t y)
