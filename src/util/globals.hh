@@ -2,9 +2,6 @@
 
 #include "def.hh"
 #include "../graphics/image.hh"
-#include "../graphics/texture.hh"
-#include "../graphics/shader.hh"
-#include "../graphics/mesh.hh"
 #include "tools.hh"
 
 #include <iris/vec2.hh>
@@ -47,10 +44,4 @@ namespace State
 	extern Color curColor, eraserColor, transparencyGridColor1, transparencyGridColor2;
 	extern uint8_t gridSize;
 	extern Tools tool;
-}
-
-namespace Assets
-{
-	extern UP<Shader> objectShader;
-	extern UP<Mesh> centeredQuadMesh;
 }

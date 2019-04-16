@@ -1,12 +1,12 @@
 #pragma once
 
 #include "../widgets/mainWindowWidget.hh"
-#include "../widgets/glWidget.hh"
 #include "../widgets/pickColorButton.hh"
 #include "../widgets/brushToolButton.hh"
 #include "../widgets/eraserToolButton.hh"
 #include "../widgets/eyedropperToolButton.hh"
 #include "../widgets/fillToolButton.hh"
+#include "../widgets/workspaceWidget.hh"
 
 #include <QtWidgets/QShortcut>
 #include <QtWidgets/QAction>
@@ -26,7 +26,7 @@ extern QLabel *magLabel, *currentToolLabel;
 
 extern QWidget *center, *timelineContainer, *leftBarContainer, *rightBarContainer, *canvasContainer, *infoBarContainer, *vDiv, *hDiv;
 extern MainWindowWidget *mainWindowWidget;
-extern GLWidget *canvasWidget;
+extern WorkspaceWidget *workspaceContainer;
 extern PickColorButton *pickColorButton;
 extern BrushToolButton *brushToolButton;
 extern EraserToolButton *eraserToolButton;

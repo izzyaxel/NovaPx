@@ -1,14 +1,19 @@
 #include "workspaceWidget.hh"
 #include "../util/globals.hh"
 #include "../util/gui.hh"
+#include "../graphics/png.hh"
+#include "../util/io.hh"
+#include "../util/util.hh"
 
 #include <chrono>
 #include <iris/vec2.hh>
+#include <iris/interpolation.hh>
+#include <QtWidgets/QStyleOption>
+#include <QtGui/QPainter>
 
 static void modifyCanvas()
 {
-	IR::vec2<int32_t> worldspaceClick = Mouse::pos + Camera::pos;
-	worldspaceClick.y() = -worldspaceClick.y();
+	IR::vec2<int32_t> worldspaceClick = IR::vec2<int32_t>(Mouse::pos.x(), static_cast<int32_t>(Context::height) - Mouse::pos.y()) + Camera::pos;
 	IR::vec2<uint32_t> curCanvasSize(canvas->scale * IR::vec2<uint32_t>(canvas->width, canvas->height));
 	IR::vec2<int32_t> canvasOffsets(curCanvasSize / 2);
 	if(worldspaceClick.x() > -canvasOffsets.x() && worldspaceClick.x() < canvasOffsets.x() && worldspaceClick.y() > -canvasOffsets.y() && worldspaceClick.y() < canvasOffsets.y())
@@ -49,15 +54,35 @@ static void modifyCanvas()
 
 WorkspaceWidget::WorkspaceWidget(QWidget *parent) : QWidget(parent)
 {
-	this->timer = new QTimer(this);
-	QObject::connect(this->timer, &QTimer::timeout, this->timer, [&](){this->update();});
-	this->timer->setInterval(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::duration<double>(1.0 / 60.0)));
-	this->timer->start();
+	this->updateTimer = new QTimer(this);
+	QObject::connect(this->updateTimer, &QTimer::timeout, this->updateTimer, [&](){this->update();});
+	this->updateTimer->setInterval(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::duration<double>(1.0 / this->framerate)));
+	this->updateTimer->start();
+	this->setMouseTracking(true);
+	canvas = MS<Image>(getCWD() + "test.png");
+	this->qCanvas = QImage(canvas->width, canvas->height, QImage::Format_RGBA64);
+	this->qCanvas.fill(QColor::fromRgb(255, 255, 255));
+	canvas->updateQImage(this->qCanvas);
+	this->qCanvas.save("out.png", "PNG", 100);
 }
 
 WorkspaceWidget::~WorkspaceWidget()
 {
-	delete this->timer;
+	delete this->updateTimer;
+}
+
+void WorkspaceWidget::paintEvent(QPaintEvent *event)
+{
+	QStyleOption o;
+	o.initFrom(this);
+	QPainter p(this);
+	this->style()->drawPrimitive(QStyle::PE_Widget, &o, &p, this);
+	
+	IR::vec2<int32_t> origin(static_cast<int32_t>((this->width() / 2)), static_cast<int32_t>((this->height() / 2)));
+	origin.x() -= static_cast<int32_t>(((canvas->width * canvas->scale.x()) / 2));
+	origin.y() -= static_cast<int32_t>(((canvas->height * canvas->scale.y()) / 2));
+	origin += Camera::pos;
+	p.drawImage(QPoint(origin.x(), origin.y()), this->qCanvas);
 }
 
 void WorkspaceWidget::keyPressEvent(QKeyEvent *event)
@@ -90,7 +115,10 @@ void WorkspaceWidget::mousePressEvent(QMouseEvent *event)
 	}
 	Mouse::pos = IR::vec2<int32_t>(event->x(), event->y());
 	Mouse::lastClickPos = IR::vec2<int32_t>(event->x(), event->y());
-	modifyCanvas();
+	if(!Keyboard::spaceDown)
+	{
+		//modifyCanvas();
+	}
 }
 
 void WorkspaceWidget::mouseReleaseEvent(QMouseEvent *event)
@@ -132,22 +160,16 @@ void WorkspaceWidget::mouseMoveEvent(QMouseEvent *event)
 		delta.x() = -delta.x();
 		Camera::pos += delta;
 	}
-	else
+	else if(Mouse::lmbDown || Mouse::lmbDownDrag)
 	{
 		modifyCanvas();
 	}
 }
 
-static float loglerp(float a, float b, float progress)
-{
-	return a * std::pow(b / a, progress);
-}
-
 void WorkspaceWidget::wheelEvent(QWheelEvent *event)
 {
-	int32_t sign = event->delta() > 0 ? 1 : -1;
-	this->accum += sign;
+	this->accum += event->delta() > 0 ? 1 : -1;
 	if(this->accum < 0.0f) this->accum = 0.0f;
 	if(this->accum > this->maxAccum) this->accum = this->maxAccum;
-	canvas->setScale({std::max<float>(canvas->scale.x() + 1.0f, loglerp(Camera::minZoom, Camera::maxZoom, this->accum / maxAccum))});
+	canvas->setScale({std::max<float>(canvas->scale.x() + 1.0f, IR::loglerp<float>(Camera::minZoom, Camera::maxZoom, this->accum / maxAccum))});
 }

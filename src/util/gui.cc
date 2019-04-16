@@ -9,7 +9,7 @@ QLabel *magLabel = nullptr, *currentToolLabel = nullptr;
 
 QWidget *center = nullptr, *timelineContainer = nullptr, *leftBarContainer = nullptr, *rightBarContainer = nullptr, *toolbarContainer = nullptr, *canvasContainer = nullptr, *infoBarContainer = nullptr, *vDiv = nullptr, *hDiv = nullptr;
 MainWindowWidget *mainWindowWidget = nullptr;
-GLWidget *canvasWidget = nullptr;
+WorkspaceWidget *workspaceContainer = nullptr;
 PickColorButton *pickColorButton = nullptr;
 BrushToolButton *brushToolButton = nullptr;
 EraserToolButton *eraserToolButton = nullptr;
@@ -88,9 +88,17 @@ QSplitter::handle
 	border: 1px solid rgb(40, 40, 40);
 })");
 	
-	canvasWidget = new GLWidget(hSplitter);
-	canvasWidget->setMinimumSize(256, 256);
-	canvasWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+	canvasContainer = new QWidget(hSplitter);
+	
+	workspaceContainer = new WorkspaceWidget(canvasContainer);
+	workspaceContainer->setMinimumSize(256, 256);
+	workspaceContainer->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+	workspaceContainer->setStyleSheet(R"(
+QWidget
+{
+	background-color: rgb(90, 90, 90);
+	border: 2px dashed white;
+})");
 	
 	timelineContainer = new QWidget(vSplitter);
 	timelineContainer->setMinimumSize(100, 100);
@@ -192,8 +200,6 @@ QSplitter::handle
 	border: 1px solid rgb(40, 40, 40);
 })");
 	
-	canvasContainer = new QWidget(hSplitter);
-	
 	canvasLayout = new QVBoxLayout(canvasContainer);
 	canvasLayout->setContentsMargins(0, 0, 0, 0);
 	
@@ -231,7 +237,7 @@ QLabel
 	infoBarLayout->addWidget(vDiv);
 	infoBarLayout->addWidget(currentToolLabel);
 	
-	canvasLayout->addWidget(canvasWidget);
+	canvasLayout->addWidget(workspaceContainer);
 	canvasLayout->addWidget(infoBarContainer);
 	
 	//Menus
@@ -284,12 +290,4 @@ QMenuBar:item:selected
 	
 	mainLayout->addWidget(menuBar);
 	mainLayout->addWidget(vSplitter);
-	
-	//Actions
-	screenshotAction = new QAction("Save Preview");
-	QObject::connect(screenshotAction, &QAction::triggered, screenshotAction, [&](){canvasWidget->screenshot(getCWD() + "previews/", Context::width, Context::height);});
-	
-	//Shortcuts
-	screenshotShortcut = new QShortcut(QKeySequence(Qt::Key_F12), canvasWidget);
-	QObject::connect(screenshotShortcut, SIGNAL(activated()), screenshotAction, SLOT(trigger()));
 }

@@ -22,6 +22,5 @@ int main(int argc, char **argv)
 	int ret = app.exec();
 	//TODO check if canvas has been saved, ask if it hasn't
 	canvas.reset();
-	delete canvasWidget;
 	return ret;
 }

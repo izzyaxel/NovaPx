@@ -4,6 +4,7 @@
 #include <QtCore/QTimer>
 #include <QtGui/QWheelEvent>
 #include <QtGui/QKeyEvent>
+#include <QtGui/QImage>
 
 struct WorkspaceWidget : public QWidget
 {
@@ -12,9 +13,11 @@ public:
 	WorkspaceWidget(QWidget *parent = nullptr);
 	~WorkspaceWidget();
 	
-	QTimer *timer;
+	QTimer *updateTimer;
+	QImage qCanvas;
 
 protected:
+	void paintEvent(QPaintEvent *event) override;
 	void mouseReleaseEvent(QMouseEvent *event) override;
 	void mousePressEvent(QMouseEvent *event) override;
 	void mouseMoveEvent(QMouseEvent *event) override;
@@ -23,5 +26,5 @@ protected:
 	void wheelEvent(QWheelEvent *event) override;
 
 private:
-	float accum = 0, maxAccum = 15;
+	float accum = 0, maxAccum = 50, framerate = 60;
 };

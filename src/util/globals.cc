@@ -39,9 +39,3 @@ namespace State
 	uint8_t gridSize = 4;
 	Tools tool = Tools::BRUSH;
 }
-
-namespace Assets
-{
-	UP<Shader> objectShader = nullptr;
-	UP<Mesh> centeredQuadMesh = nullptr;
-}

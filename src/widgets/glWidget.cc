@@ -38,35 +38,12 @@ static void screenshotIOThread(std::string const &folderPath, uint32_t width, ui
 	delete[] pngData;
 }
 
-GLWidget::GLWidget(QWidget *parent) : QOpenGLWidget(parent) //TODO zooming out doesnt work
+GLWidget::GLWidget(QWidget *parent) : QOpenGLWidget(parent)
 {
 	this->timer = new QTimer(this);
 	QObject::connect(this->timer, &QTimer::timeout, this->timer, [&](){this->update();});
 	this->timer->setInterval(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::duration<double>(1.0 / this->framerate)));
 	this->timer->start();
-	
-	/*this->zoomTimer = new QTimer(this);
-	QObject::connect(this->zoomTimer, &QTimer::timeout, this->zoomTimer, [this]()
-	{
-		float remap = 1.0f;
-		this->progress += std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::duration<double>(1.0 / this->framerate)).count() / 1000.0f;
-		if(this->progress > remap) this->progress = remap;
-		this->progress /= remap;
-		float start = static_cast<int32_t>(canvas->scale.x());
-		float time = std::min(this->prevAccum, this->accum) / std::max(this->prevAccum, this->accum);
-		float end = static_cast<int32_t>(IR::loglerp<float>(Camera::minZoom, Camera::maxZoom, time));
-		end = std::max(start + this->sign, end);
-		float result = IR::alerp<float>(start, end, this->progress, 2.0f);
-		if(result > end) result = end;
-		canvas->setScale({result});
-		if(this->progress >= remap)
-		{
-			this->zoomTimer->stop();
-			this->progress = 0.0f;
-			canvas->setScale({std::floor(canvas->scale.x())});
-		}
-	});
-	this->zoomTimer->setInterval(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::duration<double>(1.0 / this->framerate)));*/
 	
 	QSurfaceFormat fmt = QSurfaceFormat::defaultFormat();
 	fmt.setVersion(4, 5);
@@ -154,7 +131,7 @@ void GLWidget::paintGL()
 	}
 }
 
-static void modifyCanvas() //TODO pixel selection breaks when panned
+static void modifyCanvas()
 {
 	IR::vec2<int32_t> worldspaceClick = IR::vec2<int32_t>(Mouse::pos.x(), static_cast<int32_t>(Context::height) - Mouse::pos.y()) + Camera::pos;
 	IR::vec2<uint32_t> curCanvasSize(canvas->scale * IR::vec2<uint32_t>(canvas->width, canvas->height));
@@ -269,22 +246,10 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 
 void GLWidget::wheelEvent(QWheelEvent *event)
 {
-	float maxAccum = 50.0f;
-	int32_t sign = event->delta() > 0 ? 1 : -1;
-	this->accum += sign;
+	this->accum += event->delta() > 0 ? 1 : -1;
 	if(this->accum < 0.0f) this->accum = 0.0f;
-	if(this->accum > maxAccum) this->accum = maxAccum;
-	canvas->setScale(std::max({std::max(1.0f, std::floor(IR::alerp<float>(Camera::minZoom, Camera::maxZoom, this->accum / maxAccum, 1.2f)))}));
-	
-	/*if(this->progress == 0)
-	{
-		this->sign = event->delta() > 0 ? 1 : -1;
-		this->prevAccum = this->accum;
-		this->accum += this->sign;
-		if(this->accum < 0.0f) this->accum = 0.0f;
-		if(this->accum > this->maxAccum) this->accum = this->maxAccum;
-		this->zoomTimer->start();
-	}*/
+	if(this->accum > this->maxAccum) this->accum = this->maxAccum;
+	canvas->setScale(std::max({std::max(1.0f, std::floor(IR::alerp<float>(Camera::minZoom, Camera::maxZoom, this->accum / this->maxAccum, 1.2f)))}));
 }
 
 void GLWidget::keyPressEvent(QKeyEvent *event)

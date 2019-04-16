@@ -13,7 +13,12 @@ struct Color
 	
 	Color() = default;
 	
+	IR::vec4<iFmt> data;
+	
 	Color operator + (Color const &other);
+	Color operator - (Color const &other);
+	Color operator * (Color const &other);
+	Color operator / (Color const &other);
 	bool operator == (Color const &other);
 	bool operator != (Color const &other);
 	
@@ -51,7 +56,4 @@ struct Color
 	std::string asWeb() const;
 	
 	void print();
-
-protected:
-	iFmt r = 0, g = 0, b = 0, a = 1;
 };
