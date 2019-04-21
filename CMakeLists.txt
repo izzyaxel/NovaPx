@@ -16,7 +16,6 @@ elseif(UNIX)
 	add_definitions(-DLINUX)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall -Wextra -Wpedantic -Wformat-security -Wno-unused")
 	if(CMAKE_BUILD_TYPE MATCHES Release)
-		set(ARCH "x86_64")
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FORTIFY_SOURCE=2 -mmitigate-rop -fstack-protector-strong -fPIE")
 		set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,high-entropy-va")
 	elseif(CMAKE_BUILD_TYPE MATCHES Debug)
@@ -72,6 +71,5 @@ elseif(UNIX)
 endif()
 
 add_executable(${PROJECT_NAME} ${SRC})
-#Qt requires this if we want to use C++17 features
 
 target_link_libraries(${PROJECT_NAME} ${LIBS})
