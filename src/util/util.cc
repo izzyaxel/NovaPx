@@ -1,5 +1,6 @@
 #include "util.hh"
 
+#include <filesystem>
 #include <codecvt>
 #include <locale>
 #include <fstream>
@@ -21,7 +22,7 @@ std::string getCWD()
 	GetModuleFileNameW(nullptr, rawdir, 2048);
 	std::string exeDir = std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(std::wstring(rawdir));
 	exeDir = StringTools::replaceAll(exeDir, '\\', '/');
-	return exeDir.substr(0, exeDir.find_last_of('/')) + "/";
+	return exeDir.substr(0, exeDir.find_last_of('/') + 1);
 	#elif defined(LINUX)
 	char dir[2048];
 	getcwd(dir, 2048);
@@ -39,11 +40,7 @@ std::string readTextFile(std::string const &filePath)
 
 void createDirectory(std::string const &folderPath)
 {
-	#if defined(_WIN32)
-	CreateDirectory(folderPath.data(), nullptr);
-	#elif defined(__linux__)
-	mkdir(folderPath.data(), 0700);
-	#endif
+	std::filesystem::create_directory(folderPath);
 }
 
 void writePNG(std::string const &filePath, uint32_t width, uint32_t height, unsigned char **imageData)

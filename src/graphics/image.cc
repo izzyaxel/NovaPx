@@ -105,11 +105,11 @@ bool Image::areCoordsValid(int32_t x, int32_t y)
 void Image::floodFill(int32_t x, int32_t y, Color &oldColor, Color &newColor)
 {
 	if(oldColor == newColor) return;
-	std::queue<IR::vec2<int32_t>> pixels;
+	std::queue<vec2<int32_t>> pixels;
 	pixels.emplace(x, y);
 	do
 	{
-		IR::vec2<int32_t> p = pixels.front();
+		vec2<int32_t> p = pixels.front();
 		int32_t pX = p.x(), pY = p.y();
 		pixels.pop();
 		this->setPixel(pX, pY, newColor);
@@ -134,11 +134,11 @@ void Image::floodFill(int32_t x, int32_t y, Color &oldColor, Color &newColor)
 void Image::floodFillDiagonal(int32_t x, int32_t y, Color &oldColor, Color &newColor)
 {
 	if(oldColor == newColor) return;
-	std::queue<IR::vec2<int32_t>> pixels;
+	std::queue<vec2<int32_t>> pixels;
 	pixels.emplace(x, y);
 	do
 	{
-		IR::vec2<int32_t> p = pixels.front();
+		vec2<int32_t> p = pixels.front();
 		int32_t pX = p.x(), pY = p.y();
 		pixels.pop();
 		this->setPixel(pX, pY, newColor);
@@ -243,13 +243,13 @@ void Image::setMagLabel()
 
 void Image::limitScale()
 {
-	if(this->scale.x() < Camera::minZoom) this->scale.x() = Camera::minZoom;
-	if(this->scale.y() < Camera::minZoom) this->scale.y() = Camera::minZoom;
-	if(this->scale.x() > Camera::maxZoom) this->scale.x() = Camera::maxZoom;
-	if(this->scale.y() > Camera::maxZoom) this->scale.y() = Camera::maxZoom;
+	if(this->scale.x() < (float)Camera::minZoom) this->scale.x() = (float)Camera::minZoom;
+	if(this->scale.y() < (float)Camera::minZoom) this->scale.y() = (float)Camera::minZoom;
+	if(this->scale.x() > (float)Camera::maxZoom) this->scale.x() = (float)Camera::maxZoom;
+	if(this->scale.y() > (float)Camera::maxZoom) this->scale.y() = (float)Camera::maxZoom;
 }
 
-void Image::setScale(IR::vec2<float> const &scale)
+void Image::setScale(vec2<float> const &scale)
 {
 	this->scale = scale;
 	this->limitScale();
@@ -257,7 +257,7 @@ void Image::setScale(IR::vec2<float> const &scale)
 	this->setMagLabel();
 }
 
-void Image::addScale(IR::vec2<float> const &scale)
+void Image::addScale(vec2<float> const &scale)
 {
 	this->scale += scale;
 	this->limitScale();

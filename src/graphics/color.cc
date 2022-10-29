@@ -140,32 +140,32 @@ void Color::fromWeb(std::string const &color)
 	}
 }
 
-IR::vec3<float> Color::asRGBf() const
+vec3<float> Color::asRGBf() const
 {
 	return {static_cast<float>(this->data.r()) / ui16Max, static_cast<float>(this->data.g()) / ui16Max, static_cast<float>(this->data.b()) / ui16Max};
 }
 
-IR::vec4<float> Color::asRGBAf() const
+vec4<float> Color::asRGBAf() const
 {
 	return {static_cast<float>(this->data.r()) / ui16Max, static_cast<float>(this->data.g()) / ui16Max, static_cast<float>(this->data.b()) / ui16Max, static_cast<float>(this->data.a()) / ui16Max};
 }
 
-IR::vec3<uint8_t> Color::asRGBui8() const
+vec3<uint8_t> Color::asRGBui8() const
 {
 	return {static_cast<uint8_t>(this->data.r() / 256), static_cast<uint8_t>(this->data.g() / 256), static_cast<uint8_t>(this->data.b() / 256)};
 }
 
-IR::vec4<uint8_t> Color::asRGBAui8() const
+vec4<uint8_t> Color::asRGBAui8() const
 {
 	return {static_cast<uint8_t>(this->data.r() / 256), static_cast<uint8_t>(this->data.g() / 256), static_cast<uint8_t>(this->data.b() / 256), static_cast<uint8_t>(this->data.a() / 256)};
 }
 
-IR::vec3<uint16_t> Color::asRGBui16() const
+vec3<uint16_t> Color::asRGBui16() const
 {
 	return {this->data.r(), this->data.g(), this->data.b()};
 }
 
-IR::vec4<uint16_t> Color::asRGBAui16() const
+vec4<uint16_t> Color::asRGBAui16() const
 {
 	return {this->data.r(), this->data.g(), this->data.b(), this->data.a()};
 }
@@ -179,7 +179,8 @@ std::string Color::asWeb() const
 {
 	std::stringstream ss;
 	ss << std::hex << (static_cast<uint8_t>(this->data.r() / 256) << 24 | static_cast<uint8_t>(this->data.g() / 256) << 16 | static_cast<uint8_t>(this->data.b() / 256) << 8 | static_cast<uint8_t>(this->data.a() / 256));
-	return "#" + ss.str();
+	std::string ssc = ss.str();
+	return std::string{"#"} + ssc;
 }
 
 void Color::print()

@@ -2,36 +2,35 @@
 #include "../util/globals.hh"
 #include "../util/gui.hh"
 #include "../graphics/png.hh"
-#include "../util/io.hh"
 #include "../util/util.hh"
 
 #include <chrono>
-#include <iris/vec2.hh>
-#include <iris/interpolation.hh>
+#include <commons/math/vec2.hh>
+#include <commons/math/interpolation.hh>
 #include <QtWidgets/QStyleOption>
 #include <QtGui/QPainter>
 
 static void modifyCanvas()
 {
-	IR::vec2<int32_t> worldspaceClick = IR::vec2<int32_t>(Mouse::pos.x(), static_cast<int32_t>(Context::height) - Mouse::pos.y()) + Camera::pos;
-	IR::vec2<uint32_t> curCanvasSize(canvas->scale * IR::vec2<uint32_t>(canvas->width, canvas->height));
-	IR::vec2<int32_t> canvasOffsets(curCanvasSize / 2);
+	vec2<int32_t> worldspaceClick = vec2<int32_t>(Mouse::pos.x(), static_cast<int32_t>(Context::height) - Mouse::pos.y()) + Camera::pos;
+	vec2<uint32_t> curCanvasSize(canvas->scale * vec2<float>((float)canvas->width, (float)canvas->height));
+	vec2<int32_t> canvasOffsets(curCanvasSize / 2);
 	if(worldspaceClick.x() > -canvasOffsets.x() && worldspaceClick.x() < canvasOffsets.x() && worldspaceClick.y() > -canvasOffsets.y() && worldspaceClick.y() < canvasOffsets.y())
 	{
-		IR::vec2<uint32_t> imageSpaceClick(static_cast<uint32_t>(std::abs(worldspaceClick.x() + canvasOffsets.x())), static_cast<uint32_t>(std::abs(worldspaceClick.y() - canvasOffsets.y())));
-		IR::vec2<uint32_t> pixelCoord = imageSpaceClick / (curCanvasSize / IR::vec2<uint32_t>(canvas->width, canvas->height));
+		vec2<uint32_t> imageSpaceClick(static_cast<uint32_t>(std::abs(worldspaceClick.x() + canvasOffsets.x())), static_cast<uint32_t>(std::abs(worldspaceClick.y() - canvasOffsets.y())));
+		vec2<uint32_t> pixelCoord = imageSpaceClick / (curCanvasSize / vec2<uint32_t>(canvas->width, canvas->height));
 		switch(State::tool)
 		{
 			case Tools::BRUSH:
-				canvas->setPixel(pixelCoord.x(), pixelCoord.y(), State::curColor);
+				canvas->setPixel((int32_t)pixelCoord.x(), (int32_t)pixelCoord.y(), State::curColor);
 				break;
 			
 			case Tools::ERASER:
-				canvas->setPixel(pixelCoord.x(), pixelCoord.y(), State::eraserColor);
+				canvas->setPixel((int32_t)pixelCoord.x(), (int32_t)pixelCoord.y(), State::eraserColor);
 				break;
 			
 			case Tools::EYEDROPPER:
-				State::curColor = canvas->getPixel(pixelCoord.x(), pixelCoord.y());
+				State::curColor = canvas->getPixel((int32_t)pixelCoord.x(), (int32_t)pixelCoord.y());
 				{
 					auto c = State::curColor.asRGBui8();
 					pickColorButton->setColor(QColor(c.r(), c.g(), c.b()));
@@ -40,8 +39,8 @@ static void modifyCanvas()
 			
 			case Tools::FLOODFILL:
 			{
-				Color c = canvas->getPixel(pixelCoord.x(), pixelCoord.y());
-				canvas->floodFill(pixelCoord.x(), pixelCoord.y(), c, State::curColor); //TODO a way to select between the modes
+				Color c = canvas->getPixel((int32_t)pixelCoord.x(), (int32_t)pixelCoord.y());
+				canvas->floodFill((int32_t)pixelCoord.x(), (int32_t)pixelCoord.y(), c, State::curColor); //TODO a way to select between the modes
 				//canvas->floodFillDiagonal(pixelCoord.x(), pixelCoord.y(), c, State::curColor);
 				//canvas->replaceColor(c, State::curColor);
 			}
@@ -60,7 +59,7 @@ WorkspaceWidget::WorkspaceWidget(QWidget *parent) : QWidget(parent)
 	this->updateTimer->start();
 	this->setMouseTracking(true);
 	canvas = MS<Image>(getCWD() + "test.png");
-	this->qCanvas = QImage(canvas->width, canvas->height, QImage::Format_ARGB32);
+	this->qCanvas = QImage((int32_t)canvas->width, (int32_t)canvas->height, QImage::Format_ARGB32);
 	this->qCanvas.fill(QColor::fromRgb(255, 255, 255));
 	canvas->updateQImageARGB32(this->qCanvas);
 	this->qCanvas.save("out.png", "PNG", 100);
@@ -78,9 +77,9 @@ void WorkspaceWidget::paintEvent(QPaintEvent *event)
 	QPainter p(this);
 	this->style()->drawPrimitive(QStyle::PE_Widget, &o, &p, this);
 	
-	IR::vec2<int32_t> origin(static_cast<int32_t>((this->width() / 2)), static_cast<int32_t>((this->height() / 2)));
-	origin.x() -= static_cast<int32_t>(((canvas->width * canvas->scale.x()) / 2));
-	origin.y() -= static_cast<int32_t>(((canvas->height * canvas->scale.y()) / 2));
+	vec2<int32_t> origin(static_cast<int32_t>((this->width() / 2)), static_cast<int32_t>((this->height() / 2)));
+	origin.x() -= static_cast<int32_t>((((float)canvas->width * (float)canvas->scale.x()) / 2));
+	origin.y() -= static_cast<int32_t>((((float)canvas->height * (float)canvas->scale.y()) / 2));
 	origin += Camera::pos;
 	p.drawImage(QPoint(origin.x(), origin.y()), this->qCanvas);
 }
@@ -113,8 +112,13 @@ void WorkspaceWidget::mousePressEvent(QMouseEvent *event)
 		
 		default: break;
 	}
-	Mouse::pos = IR::vec2<int32_t>(event->x(), event->y());
-	Mouse::lastClickPos = IR::vec2<int32_t>(event->x(), event->y());
+	#if defined(QT6)
+	Mouse::pos = vec2<int32_t>((int32_t)event->position().x(), (int32_t)event->position().y());
+	Mouse::lastClickPos = vec2<int32_t>((int32_t)event->position().x(), (int32_t)event->position().y());
+	#elif defined(QT5)
+	Mouse::pos = vec2<int32_t>((int32_t)event->x(), (int32_t)event->y());
+	Mouse::lastClickPos = vec2<int32_t>((int32_t)event->x(), (int32_t)event->y());
+	#endif
 	if(!Keyboard::spaceDown)
 	{
 		//modifyCanvas();
@@ -142,7 +146,11 @@ void WorkspaceWidget::mouseReleaseEvent(QMouseEvent *event)
 		
 		default: break;
 	}
-	Mouse::lastReleasePos = IR::vec2<int32_t>(event->x(), event->y());
+	#if defined(QT6)
+	Mouse::lastReleasePos = vec2<int32_t>((int32_t)event->position().x(), (int32_t)event->position().y());
+	#elif defined(QT5)
+	Mouse::lastReleasePos = vec2<int32_t>((int32_t)event->x(), (int32_t)event->y());
+	#endif
 }
 
 void WorkspaceWidget::mouseMoveEvent(QMouseEvent *event)
@@ -156,7 +164,7 @@ void WorkspaceWidget::mouseMoveEvent(QMouseEvent *event)
 	
 	if(Mouse::lmbDownDrag && Keyboard::spaceDown)
 	{
-		IR::vec2<int32_t> delta = Mouse::pos - Mouse::prevPos;
+		vec2<int32_t> delta = Mouse::pos - Mouse::prevPos;
 		delta.x() = -delta.x();
 		Camera::pos += delta;
 	}
@@ -168,8 +176,8 @@ void WorkspaceWidget::mouseMoveEvent(QMouseEvent *event)
 
 void WorkspaceWidget::wheelEvent(QWheelEvent *event)
 {
-	this->accum += event->delta() > 0 ? 1 : -1;
+	this->accum += event->angleDelta().y() > 0 ? 1 : -1; //FIXME
 	if(this->accum < 0.0f) this->accum = 0.0f;
 	if(this->accum > this->maxAccum) this->accum = this->maxAccum;
-	canvas->setScale({std::max<float>(canvas->scale.x() + 1.0f, IR::loglerp<float>(Camera::minZoom, Camera::maxZoom, this->accum / maxAccum))});
+	canvas->setScale(vec2<float>{std::max<float>(canvas->scale.x() + 1.0f, loglerp<float>((float)Camera::minZoom, (float)Camera::maxZoom, this->accum / maxAccum))});
 }

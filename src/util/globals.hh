@@ -4,7 +4,7 @@
 #include "../graphics/image.hh"
 #include "tools.hh"
 
-#include <iris/vec2.hh>
+#include <commons/math/vec2.hh>
 
 extern SP<Image> canvas; //TODO move to in-place editing on the GPU
 
@@ -20,7 +20,7 @@ namespace Mouse
 {
 	extern bool lmbDown, rmbDown, mmbDown;
 	extern bool lmbDownDrag, rmbDownDrag, mmbDownDrag;
-	extern IR::vec2<int32_t> pos, prevPos, lastClickPos, lastReleasePos;
+	extern vec2<int32_t> pos, prevPos, lastClickPos, lastReleasePos;
 }
 
 namespace Keyboard
@@ -30,7 +30,7 @@ namespace Keyboard
 
 namespace Camera
 {
-	extern IR::vec2<int32_t> pos;
+	extern vec2<int32_t> pos;
 	extern int32_t minZoom, maxZoom;
 }
 

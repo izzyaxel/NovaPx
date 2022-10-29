@@ -99,5 +99,5 @@ void writePNG(std::string const &filePath, PNG &image)
 
 void writePNG(std::string const &filePath, Image &image)
 {
-	writePNG(filePath, image.width, image.height, image.imageData);
+	//writePNG(filePath, image.width, image.height, image.imageData);
 }

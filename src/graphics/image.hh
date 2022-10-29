@@ -3,7 +3,7 @@
 #include "color.hh"
 
 #include <string>
-#include <iris/vec2.hh>
+#include <commons/math/vec2.hh>
 #include <QtGui/QImage>
 #include <unordered_map>
 
@@ -34,9 +34,9 @@ struct Image
 	
 	void setHasUnsavedChanges();
 	
-	void setScale(IR::vec2<float> const &scale);
+	void setScale(vec2<float> const &scale);
 	
-	void addScale(IR::vec2<float> const &scale);
+	void addScale(vec2<float> const &scale);
 	
 	/// Non-recursive (prevents stack overflows) flood fill
 	void floodFill(int32_t x, int32_t y, Color &oldColor, Color &newColor);
@@ -56,7 +56,7 @@ struct Image
 	char colorFormat = 'a', bitDepth = 'a';
 	std::string filePath;
 	std::vector<std::vector<Color>> imageData;
-	IR::vec2<float> scale{1};
+	vec2<float> scale{1};
 	std::unordered_map<uint32_t, bool> scanlineDirty;
 
 private:

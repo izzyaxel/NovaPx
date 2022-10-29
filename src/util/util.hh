@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <limits>
 
 constexpr uint8_t ui8Max = std::numeric_limits<uint8_t>::max();
 constexpr uint16_t ui16Max = std::numeric_limits<uint16_t>::max();

@@ -2,8 +2,8 @@
 
 #include "../util/def.hh"
 
-#include <iris/vec3.hh>
-#include <iris/vec4.hh>
+#include <commons/math/vec3.hh>
+#include <commons/math/vec4.hh>
 #include <string>
 #include <cstdint>
 
@@ -13,7 +13,7 @@ struct Color
 	
 	Color() = default;
 	
-	IR::vec4<iFmt> data;
+	vec4<iFmt> data;
 	
 	Color operator + (Color const &other);
 	Color operator - (Color const &other);
@@ -32,28 +32,28 @@ struct Color
 	void fromWeb(std::string const &color);
 	
 	/// 0-1 float RGB representation
-	IR::vec3<float> asRGBf() const;
+	[[nodiscard]]vec3<float> asRGBf() const;
 	
 	/// 0-1 float RGBA representation
-	IR::vec4<float> asRGBAf() const;
+	[[nodiscard]]vec4<float> asRGBAf() const;
 	
 	/// 0-255 RGB representation
-	IR::vec3<uint8_t> asRGBui8() const;
+	[[nodiscard]]vec3<uint8_t> asRGBui8() const;
 	
 	/// 0-255 RGBA representation
-	IR::vec4<uint8_t> asRGBAui8() const;
+	[[nodiscard]]vec4<uint8_t> asRGBAui8() const;
 	
 	/// 0-65535 RGB representation
-	IR::vec3<uint16_t> asRGBui16() const;
+	[[nodiscard]]vec3<uint16_t> asRGBui16() const;
 	
 	/// 0-65535 RGBA representation
-	IR::vec4<uint16_t> asRGBAui16() const;
+	[[nodiscard]]vec4<uint16_t> asRGBAui16() const;
 	
 	/// 0xAARRGGBB representation
-	uint32_t asHex() const;
+	[[nodiscard]]uint32_t asHex() const;
 	
 	/// #RRGGBBAA representation
-	std::string asWeb() const;
+	[[nodiscard]]std::string asWeb() const;
 	
 	void print();
 };
